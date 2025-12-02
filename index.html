@@ -258,11 +258,7 @@ firebase.analytics();
   <span>Real Estate</span>
 </div>
       <div class="category-circle" data-category="job" style="background-image:url('Stockphotos/Job Consultants.png')"><span>Job Consultancy</span></div>
-<!--
-<div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')">
-    <span>Event Management</span>
-</div>
--->
+      <div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')"><span>Event Management</span></div>
       <div class="category-circle" data-category="freight" style="background-image:url('Stockphotos/Freight Forwarding CHA.png')"><span>Freight/CHA Clearance</span></div>
       <div class="category-circle" data-category="misc" style="background-image:url('Stockphotos/Others.png')"><span>Legal &amp; Taxation Services</span></div>
     </div>
@@ -1286,7 +1282,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </section>
 
 
-<!-- Event Management -->
+//*Events*//
 
 
 <style>
@@ -1785,7 +1781,7 @@ function closePdfModal(e) {
 }
 
 
-document.querySelectorAll('.category-circle').forEach(el => {
+ document.querySelectorAll('.category-circle').forEach(el => {
   el.onclick = () => {
     currentCategory = el.getAttribute('data-category');
 
@@ -1797,14 +1793,10 @@ document.querySelectorAll('.category-circle').forEach(el => {
     navigate(currentCategory);
     resetFlashContent();
 
-    // 👇 auto-scroll for Real Estate + Job Consultancy + Event Management
-    if (
-        currentCategory === 'realestate' ||
-        currentCategory === 'job' ||
-        currentCategory === 'event'
-    ) {
+    // 👇 extra: auto-scroll only for Real Estate
+    if (currentCategory === 'realestate') {
       setTimeout(() => {
-        const sec = document.getElementById(currentCategory); // auto-target the section
+        const sec = document.getElementById('realestate');
         if (sec) {
           sec.scrollIntoView({
             behavior: 'smooth',
@@ -1813,11 +1805,8 @@ document.querySelectorAll('.category-circle').forEach(el => {
         }
       }, 300);
     }
-
   };
 });
-
-
 
 
   flashContent.onclick = () => {
