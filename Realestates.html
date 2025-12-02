@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Annai Savvy Associates [Real Estate]</title>
+<style>
+.Buyer, .Seller {
+    background: #FF0000;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.5em;
+    padding: 6px 22px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px #000;
+    text-shadow: 2px 2px 9px #000;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #0c153a;
+    color: #FFFFFF;
+}
+.background-logo {
+    background: url('file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png') center center no-repeat;
+    background-size: cover;
+    position: fixed;
+    top: 0; left: 0; width: 90vw; height: 100vh;
+    opacity: 0.35;
+    z-index: 0;
+}
+.container {
+    position: relative;
+    z-index: 1;
+    width: 80%;
+    margin: 40px auto;
+    padding: 20px 40px;
+    background: rgba(12, 21, 58, 0.85);
+    border-radius: 22px;
+    box-shadow: 0 6px 25px #FFFACD;
+}
+.header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 5px;
+}
+.header-logo {
+    height: 100px;
+    width: auto;
+    margin-right: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #2226;
+}
+.top-banner {
+    text-align: center;
+    color: #FFFACD;
+    font-size: 2em;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.subtitle {
+    text-align: center;
+    color: #ffd700;
+    margin-bottom: 24px;
+    font-size: 1.3em;
+    font-weight: 500;
+}
+.feature-section {
+    background: rgba(12, 21, 58, 0.86);
+    padding: 22px 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    color: #D3D3D3;
+    font-weight: bold;
+    font-size: 1.3em;
+    text-shadow: 2px 2px 9px #000;
+    border: 2px solid #000;
+    /* Added Shadow for prominence */
+    box-shadow: 0 8px 32px #FFFACD;
+}
+.highlight-red {
+    background: #FF0000;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.13em;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 2.2px solid #000;
+    display: inline-block;
+    margin-bottom: 14px;
+    text-shadow: 2px 2px 6px #000;
+    box-shadow: 0 2px 10px #0004;
+    letter-spacing: 0.04em;
+}
+ul.features {
+    list-style: disc;
+    padding-left: 22px;
+    margin-top: 8px;
+}
+ul.features li {
+    margin-bottom: 10px;
+    font-size: 1.09em;
+    color: #fff;
+    font-weight: normal;
+    text-shadow: none;
+}
+.main-section {
+    display: flex;
+    justify-content: space-around;
+    gap: 150px;
+}
+.option-card {
+    border: 2px solid #000;
+    border-radius: 14px;
+    width: 41%;
+    padding: 28px 16px 22px 16px;
+    box-shadow: 0 8px 32px #FFFACD;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.just-one-percent {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: #ffd700;
+    color: #0c153a;
+    border-radius: 18px;
+    font-weight: bold;
+    padding: 8px 20px;
+    font-size: 4em;
+    box-shadow: 0 2px 8px #FFFACD;
+}
+.option-title {
+    color: #FFFF00;
+    font-size: 1.75em;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+.option-desc {
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    font-size: 1.25em;
+    text-align: center;
+    min-height: 50px;
+}
+.option-tip {
+    color: #ffd700;
+    font-size: 1.04em;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+@keyframes blinkBtn {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+.action-btn {
+    background: #ffd700;
+    color: #1a2364;
+    font-weight: bold;
+    font-size: 1.19em;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 35px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 10px #FFFACD;
+    transition: background 0.2s;
+    animation: blinkBtn 1.1s linear infinite;
+}
+.action-btn:hover {
+    background: #eecc00;
+}
+@media (max-width: 900px) {
+    .main-section {
+        flex-direction: column;
+        gap: 28px;
+    }
+    .option-card {
+        width: 100%;
+    }
+}
+.modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(12,21,58,0.79); z-index: 9999;
+    display: none; align-items: center; justify-content: center;
+}
+.modal-content {
+    background: #fff; padding: 30px 38px; min-width: 350px;
+    border-radius: 15px; position: relative; color: #0c153a;
+    box-shadow: 0 8px 32px #FFFACD;
+    max-width: 95vw;
+}
+.close-btn {
+    background: transparent; color: #eecc00; border: none; font-size: 1.75em;
+    position: absolute; top: 9px; right: 18px; cursor: pointer;
+}
+.form-btn, .form-radio {
+    background: #ffd700; color: #1a2364; border: none; padding: 9px 22px;
+    border-radius: 7px; font-weight: bold; font-size: 1em; margin-top: 9px;
+    cursor: pointer;
+}
+.form-btn:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+.form-group { margin-bottom: 13px; }
+label {  font-weight: 300; }
+input, textarea, select { padding: 8px; width: 50%; border-radius: 7px; border: 1px solid #ccc; margin-top: 4px;}
+.checkbox-row { display: flex; gap: 18px; margin-top: 8px; margin-bottom: 12px; }
+.radio-row { display: flex; gap: 24px; align-items: center; margin-bottom: 12px; }
+
+/* FLASH MARQUEE BAR */
+.flash-bar-fixed {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    background: #FF0000;
+    border-top: 3px solid #fff;
+    z-index: 10000;
+    padding: 0;
+    overflow: hidden;
+}
+.flash-bar-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-continuous 35s linear infinite;
+    align-items: center;
+}
+.flash-bar-text {
+    display: inline-block;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.75em;
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 9px #000, 0 0 18px #000;
+    white-space: nowrap;
+    padding-right: 68px;
+}
+@keyframes marquee-continuous {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+</style>
+</head>
+<body>
+<div class="background-logo"></div>
+<div class="container">
+    <div class="header-flex">
+        <img src="file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png"
+             alt="Company Logo"
+             class="header-logo">
+        <div class="top-banner">
+            Annai Savvy Associates [Real Estates]
+        </div>
+    </div>
+    <div class="subtitle">
+        Your Satisfaction, Our Promise
+    </div>
+    <div class="feature-section">
+        <span class="highlight-red">100% Reliable place for your Real Estates Requirements</span>
+        <ul class="features">
+            <li>We assure your satisfaction achieved</li>
+            <li>No Compromise on your requirements</li>
+            <li>We ensure our commission is very competitive and feasible to Buyers and Sellers</li>
+        </ul>
+    </div>
+    <div class="main-section">
+        <div class="option-card">
+            <div class="Buyer">Buyer</div>
+            <div class="option-title">Satisfaction-Guaranteed !!! - Happy Buy !!!</div>
+            <div class="option-desc">
+            Ensure fill your details with exact information's to speedup your requirements    
+            </div>
+            <div class="option-tip">
+            Click the Below button to fill in your property you are expecting to Buy
+            </div>
+            <button class="action-btn" onclick="openForm('buyer')">Click Here to Buy</button>
+        </div>
+        <div class="option-card">
+            <div class="Seller">Seller</div>
+            <div class="option-title">Value Guaranteed !!! Happy Sell !!!</div>
+            <div class="option-desc">
+             Ensure fill your details with exact information's to speedup your requirements   
+            </div>
+            <div class="option-tip">
+                Click the below button to fill in your property you are Selling
+            </div>
+            <button class="action-btn" onclick="openForm('seller')">Click Here to Sell</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="modalForm">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeForm()">×</button>
+        <form id="estateForm">
+            <div id="formTitle" style="font-size:1.3em;font-weight:bold;margin-bottom:16px;"></div>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>Father Name:</label>
+                <input type="text" name="father_name" required>
+            </div>
+            <div class="form-group">
+                <label>Contact Mobile number:</label>
+                <input type="text" name="mobile" pattern="[0-9]{10}" required>
+            </div>
+            <div class="form-group">
+                <label>Contact Email (optional):</label>
+                <input type="email" name="email">
+            </div>
+            <div class="form-group">
+                <label id="locationLabel"></label>
+                <input type="text" name="location" required>
+            </div>
+            <div class="form-group">
+                <label id="budgetLabel"></label>
+                <input type="text" name="budget" required>
+            </div>
+            <div class="form-group">
+                <label id="sizeLabel"></label>
+                <input type="text" name="size" required>
+            </div>
+            <div class="form-group">
+                <label>What is your expectation of property type?</label>
+                <div class="checkbox-row">
+                    <label>
+                        <input type="checkbox" name="property_type" value="Flat/Apartment">
+                        Flat/Apartment
+                    </label>
+                    <label>
+                        <input type="checkbox" name="property_type" value="Land">
+                        Land
+                    </label>
+                    <label>
+                        <input type="checkbox" name="property_type" value="Individual House">
+                        Individual House
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="color:#c48a11;">Our commission for Rental is 1Month of Rent and for Property Buying 1 % on Value. Are you ok with this?</label>
+                <div class="radio-row">
+                    <label><input type="radio" name="commission_ok" value="Yes" required onclick="toggleSendBtn(true)"> Yes</label>
+                    <label><input type="radio" name="commission_ok" value="No" required onclick="toggleSendBtn(false)"> No</label>
+                </div>
+            </div>
+            <button type="submit" class="form-btn" id="sendBtn" disabled>Send</button>
+        </form>
+    </div>
+</div>
+<!-- Flash bar -->
+<div class="flash-bar-fixed">
+    <div class="flash-bar-track">
+        <span class="flash-bar-text">
+            Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
+        </span>
+        <span class="flash-bar-text">
+            Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
+        </span>
+    </div>
+</div>
+<script>
+function openForm(type) {
+    document.getElementById('modalForm').style.display = 'flex';
+    document.getElementById('formTitle').innerText = type === 'buyer' 
+        ? 'Buyer Information' : 'Seller Information';
+    document.getElementById('locationLabel').innerText = type === 'buyer' 
+        ? 'Which location you are seeing?' : 'Which location is your property?';
+    document.getElementById('budgetLabel').innerText = type === 'buyer' 
+        ? "What's your Budget?" : "What's your expected sale/rent value?";
+    document.getElementById('sizeLabel').innerText = type === 'buyer' 
+        ? "What's your expectation of property size?" : "What's your property size?";
+    document.getElementById('estateForm').setAttribute('data-type', type);
+    document.getElementById('sendBtn').disabled = true;
+}
+function closeForm() {
+    document.getElementById('modalForm').style.display = 'none';
+    document.getElementById('estateForm').reset();
+}
+function toggleSendBtn(enable) {
+    document.getElementById('sendBtn').disabled = !enable;
+    if (!enable) setTimeout(closeForm, 700);
+}
+document.getElementById('estateForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const type = form.getAttribute('data-type');
+    const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+    const subject = `Real Estate Enquiry "${type.charAt(0).toUpperCase()+type.slice(1)}" - ${dateStr}`;
+    let body = '';
+    Array.from(form.elements).forEach(el => {
+        if (el.name && el.type !== 'button' && el.type !== 'submit' && el.type !== 'checkbox') {
+            body += `${el.previousElementSibling ? el.previousElementSibling.innerText : el.name}: ${el.value}\n`;
+        }
+    });
+    const checkedTypes = [];
+    form.querySelectorAll('input[name="property_type"]:checked').forEach(cb => checkedTypes.push(cb.value));
+    body += 'Expectation of property type: ' + (checkedTypes.length > 0 ? checkedTypes.join(', ') : 'None selected') + '\n';
+
+    closeForm();
+    fetch('/send-estate-mail', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            type, subject, body,
+            to: 'annaisavvyassociates@hotmail.com'
+        })
+    }).then(res => {
+        if (!res.ok) {
+            alert('There was a problem sending your details. Try again.');
+        }
+    });
+};
+</script>
+</body>
+</html>

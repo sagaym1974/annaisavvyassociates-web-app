@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Annai Savvy Associates - Services</title>
+<style>
+/* Include your existing full CSS here unchanged for layouts and styles */
+body {font-family: Arial, sans-serif; margin: 0; background-color: #f2f2f2;}
+header {background-color: #232f3e; color: white; padding: 10px 30px; display: flex; align-items: center;}
+.category-circle-container {display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;}
+.category-circle {width: 130px; height: 130px; border-radius: 50%; color: white; font-weight: 700; font-size: 14px; line-height: 1.2; display: flex; justify-content: center; align-items: center; cursor: pointer; background-size: cover; background-position: center; background-repeat: no-repeat; transition: transform 0.25s ease, background-size 0.25s ease; padding: 10px; box-sizing: border-box; user-select: none; box-shadow: 0 4px 6px rgba(0,0,0,0.15);}
+.category-circle:hover {transform: scale(1.1);}
+.category-circle.active {border: 3px solid #28a745; box-shadow: 0 0 10px #28a745;}
+main section.page { display: none; padding: 20px; }
+main section.page.active { display: block; }
+/* Modal styles */
+.modal-overlay {position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(12,21,58,0.79); z-index: 9999; display: none; align-items: center; justify-content: center;}
+.modal-content {background: white; padding: 30px 38px; min-width: 350px; border-radius: 15px; position: relative; color: #0c153a; box-shadow: 0 8px 32px #eee; max-width: 95vw;}
+.close-btn {background: transparent; color: #eecc00; border: none; font-size: 1.75em; position: absolute; top: 9px; right: 18px; cursor: pointer;}
+.form-btn:disabled {background: #eee; color: #aaa; cursor: not-allowed;}
+</style>
+<script>
+let currentCategory = 'landing';
+
+function navigate(page) {
+  // Remove active from all pages
+  document.querySelectorAll('main .page').forEach(p => p.classList.remove('active'));
+
+  // Close modals
+  const modalForm = document.getElementById('modalForm');
+  if(modalForm) modalForm.style.display = 'none';
+  const estateForm = document.getElementById('estateForm');
+  if(estateForm) estateForm.reset();
+  const jobForm = document.getElementById('jobForm');
+  if(jobForm) jobForm.reset();
+  const sendBtn = document.getElementById('sendBtn');
+  if(sendBtn) sendBtn.disabled = true;
+  const submitBtn = document.getElementById('submitBtn');
+  if(submitBtn) submitBtn.disabled = true;
+
+  // Activate requested page
+  const el = document.getElementById(page);
+  if(el) el.classList.add('active');
+
+  if(page === 'landing') {
+    resetFlashContent();
+  } else {
+    clearInterval(flashTextInterval);
+  }
+  if(page === 'jewelry') {
+    loadJewelryData();
+  }
+  if(page === 'contact') {
+    setContactGreeting();
+  }
+  currentCategory = page;
+}
+
+function openForm(type) {
+  const modalForm = document.getElementById('modalForm');
+  modalForm.style.display = 'flex';
+  const estateForm = document.getElementById('estateForm');
+  const jobForm = document.getElementById('jobForm');
+  if(type === 'buyer' || type === 'seller') {
+    document.getElementById('formTitle').innerText = (type === 'buyer') ? 'Buyer Information' : 'Seller Information';
+    if(estateForm) {
+      estateForm.style.display = 'block';
+      estateForm.reset();
+    }
+    if(jobForm) jobForm.style.display = 'none';
+    const sendBtn = document.getElementById('sendBtn');
+    if(sendBtn) sendBtn.disabled = true;
+  } else if(type === 'employer' || type === 'employee') {
+    document.getElementById('formTitle').innerText = (type === 'employer') ? 'Employer Vacancy Details' : 'Employee Job Application';
+    if(estateForm) estateForm.style.display = 'none';
+    if(jobForm) {
+      jobForm.style.display = 'block';
+      jobForm.reset();
+    }
+    const submitBtn = document.getElementById('submitBtn');
+    if(submitBtn) submitBtn.disabled = false;
+  }
+  if(jobForm) jobForm.setAttribute('data-type', type);
+  if(estateForm) estateForm.setAttribute('data-type', type);
+}
+
+function closeForm() {
+  const modalForm = document.getElementById('modalForm');
+  if (modalForm) modalForm.style.display = 'none';
+
+  const estateForm = document.getElementById('estateForm');
+  if (estateForm) estateForm.reset();
+
+  const jobForm = document.getElementById('jobForm');
+  if (jobForm) jobForm.reset();
+
+  const sendBtn = document.getElementById('sendBtn');
+  if (sendBtn) sendBtn.disabled = true;
+
+  const submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) submitBtn.disabled = true;
+}
+
+// Example placeholder functions
+function resetFlashContent() { /* your existing logic */ }
+function clearInterval(id) { /* your existing logic */ }
+function loadJewelryData() { /* your existing logic */ }
+function setContactGreeting() { /* your existing logic */ }
+
+// Event Listener for circle clicks
+window.onload = () => {
+  document.querySelectorAll('.category-circle').forEach(el => {
+    el.onclick = () => {
+      const category = el.getAttribute('data-category');
+      document.querySelectorAll('.category-circle').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      navigate(category);
+    };
+  });
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="logo"><img src="Logo1.png" alt="Logo" height="60"/></div>
+  <div class="company-name">Annai Savvy Associates</div>
+</header>
+<nav>
+  <!-- Navigation if any -->
+</nav>
+<main>
+  <div class="category-circle-container">
+    <div class="category-circle" data-category="jewelry" style="background-image: url('StockphotosJewelry.png')">Fashion Jewelry</div>
+    <div class="category-circle" data-category="realestate" style="background-image: url('StockphotosRealEstate.png')">Real Estate</div>
+    <div class="category-circle" data-category="job" style="background-image: url('StockphotosJobConsultants.png')">Job Consultancy</div>
+    <!-- Add other category circles similarly -->
+  </div>
+
+  <section id="jewelry" class="page">
+    <h2>Jewelry Category - Under Construction</h2>
+  </section>
+
+  <section id="realestate" class="page">
+    <h2>Real Estate</h2>
+    <button onclick="openForm('buyer')">Click Here to Buy</button>
+    <button onclick="openForm('seller')">Click Here to Sell</button>
+  </section>
+
+  <section id="job" class="page">
+    <h2>Job Consultancy</h2>
+    <button onclick="openForm('employer')">Submit Vacancy</button>
+    <button onclick="openForm('employee')">Submit Details</button>
+  </section>
+
+</main>
+
+<div id="modalForm" class="modal-overlay">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeForm()">×</button>
+    <div id="formTitle"></div>
+
+    <form id="estateForm" style="display:none;">
+      <!-- Your Real Estate form inputs here -->
+      <input type="text" name="name" placeholder="Name" required />
+      <button type="submit" id="sendBtn" disabled>Send</button>
+    </form>
+
+    <form id="jobForm" style="display:none;" enctype="multipart/form-data">
+      <!-- Your Job Consultancy form inputs here -->
+      <input type="text" name="company" placeholder="Company Name" required />
+      <button type="submit" id="submitBtn" disabled>Send</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
