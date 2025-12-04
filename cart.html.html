@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shopping Cart - Annai Savvy Associates</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
+header { background: #232f3e; display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; color: white; }
+header img { height: 50px; }
+nav a { color: white; margin: 0 15px; text-decoration: none; cursor: pointer; }
+nav a:hover { text-decoration: underline; }
+main { max-width: 900px; padding: 20px; margin: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+th { background: #444; color: #fff; }
+#total { font-weight: bold; margin-top: 20px; font-size: 20px; }
+button { background: #28a745; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #218838; }
+section {
+  display: none;
+  max-width: 800px;
+  margin: 20px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+section.active { display: block; }
+.qty-control-btn {
+  width: 28px;
+  height: 28px;
+  margin: 0 3px;
+  font-weight: bold;
+  font-size: 18px;
+  background: #ddd;
+  color: #232f3e;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.qty-control-btn:hover { background: #bbb; }
+</style>
+</head>
+<body>
+<header>
+  <div><img src="Logo1.png" alt="Logo" /></div>
+  <div style="font-size:20px;">Your Shopping Cart</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="#" onclick="switchSection('about')">About Us</a>
+    <a href="#" onclick="switchSection('contact')">Contact Us</a>
+    <a href="cart.html">Cart</a>
+  </nav>
+</header>
+<main>
+<section id="cart" class="active">
+  <table id="cartTable">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Name</th>
+        <th>Price (₹)</th>
+        <th>Quantity</th>
+        <th>Subtotal (₹)</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="cartBody"></tbody>
+  </table>
+  <div id="total"></div>
+  <button onclick="alert('Proceed to payment feature not implemented')">Proceed to Payment</button>
+</section>
+<section id="about">
+  <h2>About Us</h2>
+  <p>We are the pioneers of the new era using <strong>artificial intelligence</strong> and multifunctions at one place.</p>
+</section>
+<section id="contact">
+  <h2>Contact Us</h2>
+  <p>Hi dear sir/madam,</p>
+  <p>Call us: 9840647844 / 041 25634678</p>
+  <p>Email: <a href="mailto:annaisavvyassociates@hotmail.com">annaisavvyassociates@hotmail.com</a></p>
+</section>
+</main>
+<script>
+function getCart() {
+  return JSON.parse(localStorage.getItem('cart')) || {};
+}
+function saveCart(cart) {
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
+function switchSection(id) {
+  const sections = ['cart', 'about', 'contact'];
+  sections.forEach(sectionId => {
+    document.getElementById(sectionId).classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+}
+function loadCart() {
+  const cart = getCart();
+  const tbody = document.getElementById('cartBody');
+  tbody.innerHTML = '';
+  let totalPrice = 0;
+  let hasItems = false;
+  for (const id in cart) {
+    const item = cart[id];
+    if (item.quantity <= 0) continue;
+    hasItems = true;
+    const subtotal = item.price * item.quantity;
+    totalPrice += subtotal;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${item.img}" width="50" alt="${item.name}"></td>
+      <td>${item.name}</td>
+      <td>₹${item.price}</td>
+      <td>
+        <button class="qty-control-btn" onclick="decrementItem('${id}')">−</button>
+        ${item.quantity}
+        <button class="qty-control-btn" onclick="incrementItem('${id}')">+</button>
+      </td>
+      <td>₹${subtotal}</td>
+      <td><button onclick="removeItem('${id}')">Remove</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  document.getElementById('total').textContent = hasItems ? 'Total Amount: ₹' + totalPrice : 'Your cart is empty';
+}
+function decrementItem(id) {
+  const cart = getCart();
+  if (!cart[id]) return;
+  cart[id].quantity--;
+  if (cart[id].quantity <= 0) {
+    delete cart[id];
+  }
+  saveCart(cart);
+  loadCart();
+}
+function incrementItem(id) {
+  const cart = getCart();
+  if (!cart[id]) return;
+  cart[id].quantity++;
+  saveCart(cart);
+  loadCart();
+}
+function removeItem(id) {
+  const cart = getCart();
+  delete cart[id];
+  saveCart(cart);
+  loadCart();
+}
+window.onload = loadCart;
+</script>
+</body>
+</html>

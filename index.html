@@ -8,6 +8,8 @@
 <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore-compat.js"></script>
+
 <script>
 // Your Firebase confirguration
 const firebaseConfig = {
@@ -24,24 +26,245 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
+<script>
+/* ===== Firestore-backed global stock logic ===== */
+const db = firebase.firestore();
+
+// Sync Excel products to Firestore and read stock values
+async function syncProductsWithFirestore(products) {
+  const promises = products.map(async (p) => {
+    const docRef = db.collection('products').doc(String(p.id));
+    try {
+      const doc = await docRef.get();
+      if (doc.exists) {
+        const data = doc.data();
+        if (typeof data.stock === 'number') p.stock = data.stock;
+      } else {
+        await docRef.set({ stock: Number(p.stock || 0) }, { merge: true });
+      }
+    } catch (err) {
+      console.warn('Firestore read/create error for product', p.id, err);
+    }
+    return p;
+  });
+  return Promise.all(promises);
+}
+
+// Real-time listener to update UI on stock changes
+function subscribeToStockUpdates(products, renderCallback) {
+  db.collection('products').onSnapshot(snapshot => {
+    const updates = {};
+    snapshot.forEach(doc => { updates[doc.id] = doc.data().stock; });
+    let changed = false;
+    products.forEach(p => {
+      const key = String(p.id);
+      if (updates.hasOwnProperty(key) && p.stock !== updates[key]) {
+        p.stock = updates[key];
+        changed = true;
+      }
+    });
+    if (changed) renderCallback(products);
+  }, err => console.warn('Stock subscription error', err));
+}
+
+// Atomic decrement (transaction)
+async function decrementStockTx(productId, qty = 1) {
+  const docRef = db.collection('products').doc(String(productId));
+  try {
+    await db.runTransaction(async (tx) => {
+      const doc = await tx.get(docRef);
+      if (!doc.exists) throw new Error('Product not found');
+      const current = Number(doc.data().stock || 0);
+      if (current < qty) throw new Error('Insufficient stock');
+      tx.update(docRef, { stock: current - qty });
+    });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message || String(err) };
+  }
+}
+
+// Atomic increment (restoring stock)
+async function incrementStockTx(productId, qty = 1) {
+  const docRef = db.collection('products').doc(String(productId));
+  try {
+    await db.runTransaction(async (tx) => {
+      const doc = await tx.get(docRef);
+      const current = doc.exists ? Number(doc.data().stock || 0) : 0;
+      tx.set(docRef, { stock: current + qty }, { merge: true });
+    });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message || String(err) };
+  }
+}
+
+/* ===== New product load / render functions (Firestore-aware) ===== */
+
+async function loadJewelryDataWithGlobalStock() {
+  const jewelryProductsContainer = document.getElementById('jewelry-products');
+  const jewelryError = document.getElementById('jewelry-error');
+  if (jewelryProductsContainer) jewelryProductsContainer.innerHTML = '<p>Loading Jewelry products...</p>';
+  if (jewelryError) jewelryError.style.display = "none";
+  try {
+    const response = await fetch('products_catalog.xlsx?t=' + new Date().getTime());
+    if (!response.ok) throw new Error('Failed to fetch Excel file');
+    const data = await response.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const json = XLSX.utils.sheet_to_json(sheet);
+    let products = json.map((item, idx) => ({
+      id: idx + 1,
+      filename: item.filename ? 'images/' + item.filename : '',
+      name: item.name || ('Product ' + (idx+1)),
+      price: Number(item.price || 0),
+      stock: Number(item.stock || 0)
+    }));
+
+    // Create/read Firestore docs and update product.stock from Firestore
+    products = await syncProductsWithFirestore(products);
+
+    // Render with global stock
+    renderJewelryProductsWithGlobalStock(products);
+
+    // Subscribe to realtime stock updates
+    subscribeToStockUpdates(products, renderJewelryProductsWithGlobalStock);
+
+    updateNavCart();
+  } catch (err) {
+    if (jewelryProductsContainer) jewelryProductsContainer.innerHTML = '';
+    if (jewelryError) {
+      jewelryError.style.display = "block";
+      jewelryError.textContent = err.message || String(err);
+    }
+  }
+}
+
+function renderJewelryProductsWithGlobalStock(products) {
+  const jewelryProductsContainer = document.getElementById('jewelry-products');
+  if (!jewelryProductsContainer) return;
+  jewelryProductsContainer.innerHTML = '';
+  const cart = getCart();
+
+  products.forEach(product => {
+    if (!product.filename || !product.name) return;
+    const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
+    const avail = (typeof product.stock === 'number' ? product.stock : 0);
+    const soldOut = avail <= 0;
+    const productDiv = document.createElement('div');
+    productDiv.className = 'product-item';
+    productDiv.innerHTML = `
+      <img src="${product.filename}" alt="${product.name}" onerror="this.style.display='none';" class="product-image"/>
+      ${qtyInCart > 0 ? `<div class="selected-indicator">${qtyInCart}</div>` : ''}
+      <h3>${product.name}</h3>
+      <p>Price: ₹${product.price}</p>
+      <div class="availability" style="color:${soldOut ? 'red' : '#555'}">${soldOut ? 'Sold Out' : avail + ' units Available'}</div>
+      <div class="button-group">
+        <button class="add-btn" ${soldOut ? 'disabled' : ''} data-id="${product.id}">Add to Cart</button>
+        ${qtyInCart > 0 ? `
+          <div class="qty-box">
+            <button class="dec-btn" data-id="${product.id}">−</button>
+            <input type="text" value="${qtyInCart}" readonly />
+            <button class="inc-btn" data-id="${product.id}">+</button>
+          </div>` : ''}
+      </div>
+    `;
+    jewelryProductsContainer.appendChild(productDiv);
+
+    // event handlers
+    const addBtn = productDiv.querySelector('.add-btn');
+    const incBtn = productDiv.querySelector('.inc-btn');
+    const decBtn = productDiv.querySelector('.dec-btn');
+
+    if (addBtn) {
+      addBtn.addEventListener('click', async () => {
+        const res = await decrementStockTx(product.id, 1);
+        if (!res.ok) { alert('Cannot add to cart: ' + res.error); return; }
+        addToCartLocal(product);
+        renderJewelryProductsWithGlobalStock(products);
+      });
+    }
+
+    if (incBtn) {
+      incBtn.addEventListener('click', async () => {
+        const res = await decrementStockTx(product.id, 1);
+        if (!res.ok) { alert('Cannot increase quantity: ' + res.error); return; }
+        addToCartLocal(product);
+        renderJewelryProductsWithGlobalStock(products);
+      });
+    }
+
+    if (decBtn) {
+      decBtn.addEventListener('click', async () => {
+        const removed = removeFromCartLocal(product.id);
+        if (removed) {
+          const res = await incrementStockTx(product.id, 1);
+          if (!res.ok) console.warn('Failed to restore stock:', res.error);
+        }
+        renderJewelryProductsWithGlobalStock(products);
+      });
+    }
+  });
+}
+
+// local cart helpers (use your existing getCart/saveCart)
+function addToCartLocal(product) {
+  const cart = getCart();
+  if (!cart[product.id]) cart[product.id] = { ...product, img: product.filename, quantity: 0 };
+  cart[product.id].quantity++;
+  saveCart(cart);
+  updateNavCart();
+}
+function removeFromCartLocal(productId) {
+  const cart = getCart();
+  if (!cart[productId]) return false;
+  cart[productId].quantity--;
+  if (cart[productId].quantity <= 0) delete cart[productId];
+  saveCart(cart);
+  updateNavCart();
+  return true;
+}
+
+// Return all cart items to stock and clear local cart
+async function returnCartItemsToStockAndClear() {
+  const cart = getCart();
+  const ids = Object.keys(cart);
+  if (!ids.length) return;
+  const tasks = ids.map(id => incrementStockTx(id, cart[id].quantity));
+  await Promise.all(tasks);
+  localStorage.removeItem('cart');
+  updateNavCart();
+  if (document.getElementById('jewelry-products')) {
+    // refresh view
+    loadJewelryDataWithGlobalStock();
+  }
+}
+
+/* Make sure jewelry data loads via Firestore-aware loader when page starts */
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('jewelry-products')) {
+    loadJewelryDataWithGlobalStock();
+  }
+});
+</script>
 
 
 
 
+  <!-- Your Firebase configuration-->
+  <!--const firebaseConfig = {--->
+ <!--apiKey: "AIzaSyABRImFyGE7ku2fWpQBiE_7fUrBXEX3fXU",-->
+ <!-- authDomain: "annai-savvy-associates.firebaseapp.com",-->
+ <!--projectId: "annai-savvy-associates",-->
+ <!--storageBucket: "annai-savvy-associates.appspot.com",-->
+<!--messagingSenderId: "1040802923823",-->
+ <!--appId: "1:1040802923823:web:9b4cea79ab33ef9dc04dda",-->
+<!--measurementId: "G-ZKJVGS5TG6"-->
+<!--};-->
 
-  // Your Firebase configuration
-  //const firebaseConfig = {
- // apiKey: "AIzaSyABRImFyGE7ku2fWpQBiE_7fUrBXEX3fXU",
- // authDomain: "annai-savvy-associates.firebaseapp.com",
- // projectId: "annai-savvy-associates",
- // storageBucket: "annai-savvy-associates.appspot.com",
-//  messagingSenderId: "1040802923823",
- // appId: "1:1040802923823:web:9b4cea79ab33ef9dc04dda",
- // measurementId: "G-ZKJVGS5TG6"
-//};
-
-//firebase.initializeApp(firebaseConfig);
-//firebase.analytics();
+<!--firebase.initializeApp(firebaseConfig);-->
+<!--firebase.analytics();-->
 
 </script>
 
@@ -2080,7 +2303,7 @@ function closePdfModal(e) {
   }
 
   if (page === 'jewelry') {
-    loadJewelryData();
+    loadJewelryDataWithGlobalStock();
   }
 
   if (page === 'contact') {
