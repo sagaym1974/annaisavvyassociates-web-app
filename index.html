@@ -258,7 +258,7 @@ firebase.analytics();
   <span>Real Estate</span>
 </div>
       <div class="category-circle" data-category="job" style="background-image:url('Stockphotos/Job Consultants.png')"><span>Job Consultancy</span></div>
-      <div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')"><span>Event Management</span></div>
+      <!--<div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')"><span>Event Management</span></div>-->
       <div class="category-circle" data-category="freight" style="background-image:url('Stockphotos/Freight Forwarding CHA.png')"><span>Freight/CHA Clearance</span></div>
       <div class="category-circle" data-category="misc" style="background-image:url('Stockphotos/Others.png')"><span>Legal &amp; Taxation Services</span></div>
     </div>
@@ -337,7 +337,7 @@ firebase.analytics();
   .re-top-banner {
       text-align: center;
       color: #FFFACD;
-      font-size: 2em;
+      font-size: 1.5em;
       font-weight: bold;
       letter-spacing: 1px;
   }
@@ -570,6 +570,14 @@ firebase.analytics();
           <button class="re-close-btn" onclick="closeEstateForm()">×</button>
           <form id="estateForm">
               <div id="estateFormTitle" style="font-size:1.3em;font-weight:bold;margin-bottom:16px;"></div>
+
+              <!-- DEAL TYPE RADIO OPTIONS (ADDED) -->
+              <div class="re-form-group">
+                <label style="font-weight:bold; color:#003f87; display:block; margin-bottom:6px;">Select Requirement:</label>
+                <div class="re-radio-row" id="dealTypeOptions"></div>
+              </div>
+              <!-- END ADDED -->
+
               <div class="re-form-group">
                   <label>Name:</label>
                   <input type="text" name="name" required>
@@ -654,6 +662,22 @@ firebase.analytics();
       document.getElementById('reSizeLabel').innerText =
           isBuyer ? "What\'s your expectation of property size?" : "What\'s your property size?";
 
+      // populate the deal type radio options
+      const dealTypeDiv = document.getElementById('dealTypeOptions');
+      if (dealTypeDiv) {
+        if (isBuyer) {
+          dealTypeDiv.innerHTML = `
+            <label style="margin-right:8px;"><input type="radio" name="deal_type" value="Rental" required> Rental</label>
+            <label><input type="radio" name="deal_type" value="Buy" required> Buy</label>
+          `;
+        } else {
+          dealTypeDiv.innerHTML = `
+            <label style="margin-right:8px;"><input type="radio" name="deal_type" value="Rental" required> Rental</label>
+            <label><input type="radio" name="deal_type" value="Sell" required> Sell</label>
+          `;
+        }
+      }
+
       form.setAttribute('data-type', type);
       modal.style.display = 'flex';
   }
@@ -683,6 +707,12 @@ firebase.analytics();
 
       const subject = typeLabel + ' Query ' + dateStr;
 
+
+
+      // gather fields
+      const dealTypeEl = form.querySelector('input[name="deal_type"]:checked');
+      const dealType = dealTypeEl ? dealTypeEl.value : '';
+
       const name       = form.elements['name'].value;
       const fatherName = form.elements['father_name'].value;
       const mobile     = form.elements['mobile'].value;
@@ -699,6 +729,7 @@ firebase.analytics();
       const commission   = commissionEl ? commissionEl.value : '';
 
       const bodyLines = [
+          'Deal Type: ' + dealType,
           'Name: ' + name,
           'Father Name: ' + fatherName,
           'Contact Mobile number: ' + mobile,
@@ -710,7 +741,7 @@ firebase.analytics();
           'Commission acceptance: ' + commission
       ];
 
-      const body = bodyLines.join('\\n');
+      const body = bodyLines.join('\r\n');
 
       closeEstateForm();
 
@@ -733,9 +764,8 @@ function scrollToBottom(id) {
                 behavior: "smooth"
             });
         }
-    }, 500);
+    }, 100);
 }
-
 
 
 
@@ -776,7 +806,7 @@ body {
 }
 
 .job-consultancy-container {
-  background: #8B004B;
+  background: #e6e6e6;   /* light grey */
   color: var(--text-main);
   padding: 20px;
   border-radius: 12px;
@@ -795,9 +825,9 @@ body {
     position: relative;
     z-index: 1;
     width: 80%;
-    margin: 40px auto;
-    padding: 20px 40px;
-    background: #ffe6f0;
+    margin: 10px auto 5px auto;   /* moved higher */
+    padding: 10px 20px;           /* smaller height */
+    background: #ffe6f0;          /* pink (or your grey if you changed it) */
     border-radius: 22px;
     box-shadow: 0 6px 25px var(--shadow-main);
 }
@@ -813,7 +843,7 @@ body {
     margin-bottom: 5px;
 }
 .header-logo {
-    height: 100px;
+    height: 50px;
     width: auto;
     margin-right: 12px;
     border-radius: 10px;
@@ -821,10 +851,10 @@ body {
 }
 .top-banner {
     background-color: #2f2f2f;
-    padding: 5px 12px;
+    padding: 3px 8px;
     border-radius: 8px;
     color: #FFFACD;
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -836,16 +866,17 @@ body {
     border-radius: 12px;
     color: #ffd700;
     font-weight: 500;
+    text-align: center;
 }
 
 .feature-section {
     background: var(--accent-grey);
-    padding: 22px 16px;
+    padding: 18px 14px;
     border-radius: 12px;
     margin-bottom: 24px;
     color: var(--primary-grey);
     font-weight: bold;
-    font-size: 1.3em;
+    font-size: 1em;
     border: 2px solid #ddd;
     box-shadow: 0 8px 32px #eee;
 }
@@ -854,8 +885,8 @@ body {
     background: var(--black);
     color: var(--light-grey);
     font-weight: bold;
-    font-size: 1.13em;
-    padding: 8px 18px;
+    font-size: 1em;
+    padding: 6px 14px;
     border-radius: 8px;
     border: 2.2px solid #aaa;
     display: inline-block;
@@ -886,8 +917,8 @@ ul.features li {
 .option-card {
     border: 2px solid var(--accent-grey);
     border-radius: 14px;
-    width: 41%;
-    padding: 28px 16px 22px 16px;
+    width: 30%;
+    padding: 25px 12px 18px 12px;
     box-shadow: 0 8px 32px #eee;
     display: flex;
     flex-direction: column;
@@ -898,8 +929,8 @@ ul.features li {
 
 .option-title {
     color: var(--blue);
-    font-size: 1.75em;
-    font-weight: 700;
+    font-size: 1.25em;
+    font-weight: 500;
     margin-bottom: 7px;
 }
 
@@ -1064,26 +1095,52 @@ textarea {
             <div class="top-banner">Annai Savvy Associates [Job Consultancy]</div>
         </div>
         <div class="subtitle">Your Satisfaction, Our Commitment</div>
-        <div class="feature-section">
-            <span class="highlight-grey">Reliable partner for your Employment & Recruitment Needs</span>
-            <ul class="features">
-                <li>Connecting Employers and Employees effectively</li>
-                <li>Ensuring clear and transparent communication</li>
-                <li>Competitive and feasible service charges for all</li>
-            </ul>
-        </div>
+        <div class="feature-section" style="padding: 10px 12px;">
+    <span class="highlight-grey">Reliable partner for your Employment & Recruitment Needs</span>
+
+    <div id="job-features" 
+     style="font-size: 2em; color: #000; font-weight: normal; margin: 5px 0; text-align: center; height: 28px;">
+</div>
+
+<script>
+const jobLines = [
+  "• Connecting Employers and Employees effectively",
+  "• Ensuring clear and transparent communication",
+  "• Competitive and feasible service charges for all"
+];
+
+let jobIndex = 0;
+const jobBox = document.getElementById("job-features");
+
+function blinkText() {
+  jobBox.style.opacity = 0;
+
+  setTimeout(() => {
+    jobBox.innerText = jobLines[jobIndex];
+    jobBox.style.opacity = 1;
+
+    jobIndex = (jobIndex + 1) % jobLines.length;
+  }, 400);
+}
+
+setInterval(blinkText, 2000);
+blinkText();
+</script>
+
+</div>
+
         <div class="main-section">
             <div class="option-card">
                 <div class="Employer">Employer</div>
                 <div class="option-title">Find the Right Talent - Happy Hiring!</div>
-                <div class="option-desc">Fill in your company and vacancy details accurately to get suitable candidates quickly.</div>
+                <div class="option-desc">Fill in the required details clearly to make us to act Faster</div>
                 <div class="option-tip">Click below to submit job vacancy details for recruitment</div>
                 <button class="action-btn" onclick="jobOpenForm('employer')">Submit Vacancy</button>
             </div>
             <div class="option-card">
                 <div class="Employee">Employee</div>
                 <div class="option-title">Find Your Dream Job - Happy Working!</div>
-                <div class="option-desc">Provide your personal and professional details to find matching job opportunities.</div>
+                <div class="option-desc">Provide your required details to find and to connect you for the matching job opportunities.</div>
                 <div class="option-tip">Click below to submit your job application details</div>
                 <button class="action-btn" onclick="jobOpenForm('employee')">Submit Details</button>
             </div>
@@ -1196,85 +1253,134 @@ document.addEventListener("DOMContentLoaded", function () {
 
     sendBtn.addEventListener('click', function () {
 
-        const type = jobForm.getAttribute('data-type');
-        const employerFields = document.getElementById('employerFields');
-        const employeeFields = document.getElementById('employeeFields');
+    const type = jobForm.getAttribute('data-type');
+    const employerFields = document.getElementById('employerFields');
+    const employeeFields = document.getElementById('employeeFields');
 
-        // HIDDEN block → remove required
-        let hiddenGroup = (type === "employer") ? employeeFields : employerFields;
+    // HIDDEN block → remove required (existing logic)
+    let hiddenGroup = (type === "employer") ? employeeFields : employerFields;
 
-        let removedRequired = [];
-        hiddenGroup.querySelectorAll("[required]").forEach(el => {
-            removedRequired.push(el);
-            el.removeAttribute("required");
-        });
-
-        // Validate only visible fields
-        if (!jobForm.checkValidity()) {
-            jobForm.reportValidity();
-            removedRequired.forEach(el => el.setAttribute("required", ""));
-            return;
-        }
-
-        // Restore required attributes
-        removedRequired.forEach(el => el.setAttribute("required", ""));
-
-        // ============================
-        // BUILD EMAIL CONTENT
-        // ============================
-        const f = jobForm.elements;
-
-        const now = new Date();
-        const day = String(now.getDate()).padStart(2, "0");
-        const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        const month = monthNames[now.getMonth()];
-        const year = now.getFullYear();
-        const dateStr = `${day}/${month}/${year}`;
-
-        let subjectPrefix, body = "";
-
-        if (type === "employer") {
-            subjectPrefix = "Employer";
-            body += "Company Name: " + f["company_name"].value + "\n";
-            body += "Contact Person Name: " + f["contact_person"].value + "\n";
-            body += "Mobile: " + f["mobile"].value + "\n";
-            body += "Email: " + f["email"].value + "\n";
-            body += "Staff Required: " + f["staff_required"].value + "\n";
-            body += "Qualification Required: " + f["qualification_required"].value + "\n";
-            body += "Age Limit: " + f["age_limit"].value + "\n";
-            body += "Salary Structure: " + f["salary_structure"].value + "\n";
-            body += "Other Perks: " + f["other_perks"].value + "\n";
-            body += "Designations: " + f["designations"].value + "\n";
-            body += "Remarks: " + f["remarks"].value + "\n";
-        } else {
-            subjectPrefix = "Employee";
-            body += "Name: " + f["name"].value + "\n";
-            body += "Age: " + f["age"].value + "\n";
-            body += "Mobile: " + f["mobile"].value + "\n";
-            body += "Email: " + f["email"].value + "\n";
-            body += "Current Salary: " + f["current_salary"].value + "\n";
-            body += "Expected Salary: " + f["expected_salary"].value + "\n";
-            body += "Residing At: " + f["residing_at"].value + "\n";
-            body += "Qualification: " + f["qualification"].value + "\n";
-            body += "Ready to Join: " + f["join_period"].value + "\n";
-            body += "Remarks: " + f["remarks"].value + "\n";
-        }
-
-        const subject = `${subjectPrefix} Query ${dateStr}`;
-
-        const mailto =
-            "mailto:annaisavvyassociates@hotmail.com" +
-            "?subject=" + encodeURIComponent(subject) +
-            "&body=" + encodeURIComponent(body);
-
-        // Close popup
-        window.jobCloseForm();
-
-        // Open email
-        window.location.href = mailto;
+    let removedRequired = [];
+    hiddenGroup.querySelectorAll("[required]").forEach(el => {
+        removedRequired.push(el);
+        el.removeAttribute("required");
     });
 
+    // Validate only visible fields
+    if (!jobForm.checkValidity()) {
+        // restore required attributes before returning so validation state remains consistent
+        removedRequired.forEach(el => el.setAttribute("required", ""));
+        jobForm.reportValidity();
+        return;
+    }
+
+    // Restore required attributes
+    removedRequired.forEach(el => el.setAttribute("required", ""));
+
+    // Build body by reading values FROM THE VISIBLE BLOCK (avoids duplicate name collisions)
+    let subjectPrefix, body = "";
+    let bodyLines = [];
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, "0");
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+    const dateStr = `${day}/${month}/${year}`;
+
+    if (type === "employer") {
+        subjectPrefix = "Employer";
+        const f = employerFields;
+        const company_name = f.querySelector('input[name="company_name"]').value || '';
+        const contact_person = f.querySelector('input[name="contact_person"]').value || '';
+        const mobile = f.querySelector('input[name="mobile"]').value || '';
+        const email = f.querySelector('input[name="email"]').value || '';
+        const staff_required = f.querySelector('input[name="staff_required"]').value || '';
+        const qualification_required = f.querySelector('input[name="qualification_required"]').value || '';
+        const age_limit = f.querySelector('input[name="age_limit"]').value || '';
+        const salary_structure = f.querySelector('input[name="salary_structure"]').value || '';
+        const other_perks = f.querySelector('input[name="other_perks"]').value || '';
+        const designations = f.querySelector('input[name="designations"]').value || '';
+        const remarks = f.querySelector('textarea[name="remarks"]').value || '';
+
+        bodyLines = [
+            "Company Name: " + company_name,
+            "Contact Person Name: " + contact_person,
+            "Mobile: " + mobile,
+            "Email: " + email,
+            "Staff Required: " + staff_required,
+            "Qualification Required: " + qualification_required,
+            "Age Limit: " + age_limit,
+            "Salary Structure: " + salary_structure,
+            "Other Perks: " + other_perks,
+            "Designations: " + designations,
+            "Remarks: " + remarks
+        ];
+    } else {
+        subjectPrefix = "Employee";
+        const f = employeeFields;
+        const name = f.querySelector('input[name="name"]').value || '';
+        const age = f.querySelector('input[name="age"]').value || '';
+        const mobile = f.querySelector('input[name="mobile"]').value || '';
+        const email = f.querySelector('input[name="email"]').value || '';
+        const current_salary = f.querySelector('input[name="current_salary"]').value || '';
+        const expected_salary = f.querySelector('input[name="expected_salary"]').value || '';
+        const residing_at = f.querySelector('input[name="residing_at"]').value || '';
+        const qualification = f.querySelector('input[name="qualification"]').value || '';
+        const join_period = f.querySelector('input[name="join_period"]').value || '';
+        const remarks = f.querySelector('textarea[name="remarks"]').value || '';
+
+        bodyLines = [
+            "Name: " + name,
+            "Age: " + age,
+            "Mobile: " + mobile,
+            "Email: " + email,
+            "Current Salary: " + current_salary,
+            "Expected Salary: " + expected_salary,
+            "Residing At: " + residing_at,
+            "Qualification: " + qualification,
+            "Ready to Join: " + join_period,
+            "Remarks: " + remarks
+        ];
+    }
+
+    const subject = subjectPrefix + " Query " + dateStr;
+    const mailto =
+        "mailto:annaisavvyassociates@hotmail.com" +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(bodyLines.join("\r\n"));
+
+    // Close popup (existing function)
+    jobCloseForm();
+
+    // Open email
+    window.location.href = mailto;
 });
+
+});
+
+
+
+function scrollToBottom(id) {
+    setTimeout(() => {
+        let section = document.getElementById(id);
+        if (section) {
+            window.scrollTo({
+                top: section.offsetTop + section.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    }, 100);
+}
+
+
+
+
+
+
+
+
+
+
 </script>
 
 
@@ -1282,7 +1388,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </section>
 
 
-//*Events*//
+    <!-- Event Management Section -->
 
 
 <style>
@@ -1511,11 +1617,179 @@ function closePdfModal(e) {
 
 
 
-  <section id="freight" class="page"><h2>Freight & CHA Clearance</h2><p>Content coming soon...</p></section>
+  <section id="freight" class="page">
+
+
+  <style>
+    /* Keep styling consistent with other sections */
+    .fre-container {
+      position: relative;
+      z-index: 1;
+      width: 80%;
+      margin: 40px auto;
+      padding: 18px 22px;
+      background: rgba(8, 18, 44, 0.88);
+      border-radius: 18px;
+      box-shadow: 0 6px 25px rgba(255,250,205,0.08);
+      color: #ffffff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .fre-header {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      justify-content:center;
+      margin-bottom:12px;
+    }
+    .fre-title {
+      color: #fffacd;
+      font-size: 1.4em;
+      font-weight: 700;
+      letter-spacing: .6px;
+    }
+    .fre-sub {
+      text-align:center;
+      color:#ffd700;
+      margin-bottom:18px;
+      font-weight:500;
+    }
+    .fre-grid {
+      display:flex;
+      gap:28px;
+      justify-content:space-between;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .fre-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      width: 48%;
+      min-width: 280px;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    .fre-h2 { color:#fff; font-size:1.05em; margin-bottom:10px; font-weight:700; }
+    .fre-list { padding-left:18px; line-height:1.6; margin:8px 0; color:#e7e7e7; }
+    .fre-cta {
+      display:flex; gap:12px; justify-content:center; margin-top:16px;
+    }
+    .fre-btn {
+      background:#ffd700; color:#1a2364; padding:10px 20px; border-radius:9px; border:none; font-weight:700;
+      cursor:pointer;
+    }
+    .fre-flash {
+      position: fixed;
+      left:0; bottom:0; width:100vw; background:#a12a2a; color:#fff; z-index:10000; padding:6px 0;
+      border-top: 3px solid #fff;
+    }
+    .fre-flash p { margin:6px 14px; font-weight:700; text-align:center; }
+    @media (max-width:900px) {
+      .fre-card { width:100%; }
+    }
+  </style>
+
+  <div class="fre-container">
+    <div class="fre-header">
+      <div class="fre-title">Annai Savvy Associates — Freight & CHA Clearance</div>
+    </div>
+
+    <div class="fre-sub">Reliable Cargo Movement • Customs Clearance • End-to-End Handling</div>
+
+    <div class="fre-grid">
+      <div class="fre-card">
+        <div class="fre-h2">What we do</div>
+        <p class="fre-list">
+          We coordinate the full movement of your cargo — from pickup and consolidation, through export/import customs clearance, to final delivery. Our CHA specialists handle documentation, permits, duties, and local formalities so your shipment moves fast and compliant.
+        </p>
+
+        <div class="fre-h2">Key stages we manage</div>
+        <ul class="fre-list">
+          <li><strong>Export Haulage:</strong> Pickup, packing advice and delivery to terminal/warehouse.</li>
+          <li><strong>Pre-shipment Check:</strong> Verification of contents, labelling and export compliance.</li>
+          <li><strong>Customs Clearance (Export & Import):</strong> Document prep, duty calculations, liaison with customs.</li>
+          <li><strong>Transit & Tracking:</strong> Carrier booking, tracking updates and exception handling.</li>
+          <li><strong>Destination Handling & Import Haulage:</strong> Terminal handling, local delivery and unloading.</li>
+        </ul>
+      </div>
+
+      <div class="fre-card">
+        <div class="fre-h2">Why choose our CHA service</div>
+        <ul class="fre-list">
+          <li><strong>Experienced CHA agents:</strong> Trained staff who know local customs rules and paperwork.</li>
+          <li><strong>Cost optimisation:</strong> Negotiated rates with carriers and clear duty advice.</li>
+          <li><strong>End-to-end visibility:</strong> Proactive tracking and fast resolution of delays.</li>
+          <li><strong>Compliance & documentation:</strong> Accurate filings to reduce inspections and fines.</li>
+          <li><strong>Flexible transport modes:</strong> Air, Sea, Road or multimodal options tailored to your needs.</li>
+        </ul>
+
+        <div class="fre-h2">Who we serve</div>
+        <p class="fre-list">Manufacturers, Pharma, Medical Devices, E-commerce exporters/importers, Construction materials suppliers, Fashion & retail supply chains.</p>
+
+        <div class="fre-cta">
+          
+          <button class="fre-btn" onclick="location.href='mailto:annaisavvyassociates@hotmail.com?subject=Freight%20CHA%20Assistance'">Email Us</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); color:#e9e9e9;">
+      <div style="font-weight:700; margin-bottom:8px;">Pros & Cons — quick glance</div>
+      <div style="display:flex; gap:18px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:220px;">
+          <div style="font-weight:700; color:#ffd700; margin-bottom:6px;">Advantages</div>
+          <ul style="margin:0 0 0 18px; color:#e7e7e7; line-height:1.6;">
+            <li>Access to global carrier network</li>
+            <li>Time savings and reduced customs risk</li>
+            <li>Documentation & insurance handling</li>
+          </ul>
+        </div>
+        <div style="flex:1; min-width:220px;">
+          <div style="font-weight:700; color:#ffd700; margin-bottom:6px;">Considerations</div>
+          <ul style="margin:0 0 0 18px; color:#e7e7e7; line-height:1.6;">
+            <li>Costs vary by weight, route and season</li>
+            <li>Some reliance on local partners for last-mile</li>
+            <li>Strict compliance needed for regulated goods</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px; font-size:0.95em; color:#f1f1f1;">
+      <div style="font-weight:700; margin-bottom:6px;">How to engage us</div>
+      <ol style="color:#e7e7e7; padding-left:18px; line-height:1.6;">
+        <li>Contact our CHA team with shipment details (dimensions, weight, HS code, origin & destination).</li>
+        <li>We provide a clear quote with transit ETA and documentation checklist.</li>
+        <li>We coordinate bookings, customs filings and delivery to final destination.</li>
+      </ol>
+
+      <div style="margin-top:12px;">
+        <strong>Contact:</strong> Call <a href="tel:9840647844" style="color:#ffd700; text-decoration:none;">98406 47844</a> or email <a href="mailto:annaisavvyassociates@hotmail.com" style="color:#ffd700;">annaisavvyassociates@hotmail.com</a>
+      </div>
+    </div>
+
+    <!-- Attribution / source line you can show at bottom -->
+    <div style="margin-top:14px; font-size:12px; color:#d6d6d6;">
+      <em>Content adapted for Annai Savvy Associates from general industry resources for informational purposes.</em>
+    </div>
+  </div>
+
+  <!-- small bottom flash bar for freight (keeps consistent style with other sections) -->
+  <div class="fre-flash">
+    <p>Need CHA / Freight help? Call 98406 47844 or email annaisavvyassociates@hotmail.com — mention "Freight" in subject for faster response.</p>
+  </div>
+</section>
+
+
+
+
+
+
+
   <section id="misc" class="page"><h2>Legal Team Assistance & Additional Services</h2>
 
 
-<div style="font-family: Arial, sans-serif; max-width: 100%; box-sizing: border-box; background: #153260; color: #fff; border-radius: 8px; padding: 24px 20px 24px 20px;">
+<div style="font-family: Arial, sans-serif; max-width: 100%; box-sizing: border-box; background: #6d7f92; color: #fff; border-radius: 8px; padding: 24px 20px 24px 20px;">
 
   
   <div style="display: flex; gap: 40px; align-items: flex-start;">
@@ -1549,37 +1823,60 @@ function closePdfModal(e) {
 	 <ul style="list-style-type: none; padding: 0; font-size: 14px; color: #fff; margin: 0;">
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/judge.png" alt="Criminal Cases" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-          <strong style="color: #fffd37;">Criminal Cases:</strong>&nbsp;&nbsp;<span style="color: #fff;">Assisting with legal defenses, hearings, and documentation for criminal matters.</span>
+         <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Criminal Cases</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;">Assisting with legal defenses, hearings, and documentation for criminal matters.</strong>
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/family--v1.png" alt="Family Cases" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-          <strong style="color: #fffd37;">Family Cases:</strong>&nbsp;&nbsp;<span style="color: #fff;">Support in matters related to divorce, custody, alimony, and family dispute resolution.
-</span>
+          <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Family Cases</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;">Support in matters related to divorce, custody, alimony, and family dispute resolution.
+</strong>
 
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/agreement.png" alt="Civil Cases" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-   <strong style="color: #fffd37;">Civil Cases:</strong>&nbsp;&nbsp;<span style="color: #fff;"> Legal assistance with property disputes, contractual issues, and claims.
-</span>
+   <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Civil Cases</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Legal assistance with property disputes, contractual issues, and claims.
+</strong>
        
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/wedding.png" alt="Marriage Registration" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
           
-<strong style="color: #fffd37;">Marriage Registration :</strong>&nbsp;&nbsp;<span style="color: #fff;"> Help with the legal formalities and documentation for marriage registrations.
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Marriage Registration</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Help with the legal formalities and documentation for marriage registrations.
 
-</span>
+</strong>
 
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/property.png" alt="Land Documents" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
- <strong style="color: #fffd37;">Land Documentation :</strong>&nbsp;&nbsp;<span style="color: #fff;"> Assistance in property registration, documentation, and related legal processes.
-
-
-</span>
+ <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Land Documentation</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Assistance in property registration, documentation, and related legal processes.
+</strong>
         
 
         </li>
@@ -1594,30 +1891,41 @@ function closePdfModal(e) {
       <ul style="list-style-type: none; padding: 0; font-size: 14px; color: #fff; margin: 0;">
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/gst.png" alt="GST Registrations" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-<strong style="color: #fffd37;">GST Registrations & Filings:</strong>&nbsp;&nbsp;<span style="color: #fff;"> Support for registering your business under GST and filing GST returns on time for full compliance.
-
-
-</span>
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">GST Registration & Filings</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Support for registering your business under GST and filing GST returns on time for full compliance.
+</strong>
           
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/filling-a-tax-return.png" alt="IT Returns" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
           
-<strong style="color: #fffd37;">Income Tax Returns Assistance:</strong>&nbsp;&nbsp;<span style="color: #fff;"> Guidance for preparing, filing, and managing income tax returns to maximize your tax benefits.
-
-
-</span>
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">IT Returns Assistance</strong>&nbsp;&nbsp;<strong style="color: #000;"> Guidance for preparing, filing, and managing income tax returns to maximize your tax benefits.
+</strong>
 
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/company.png" alt="Company Incorporation" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
           
-<strong style="color: #fffd37;">Incorp.of Company:</strong>&nbsp;&nbsp;<span style="color: #fff;"> End-to-end assistance for registering all types of companies, ensuring legal compliance and hassle-free setup.
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Incorporation of Co.,</strong>&nbsp;&nbsp;<strong style="color: #000;"> End-to-end assistance for registering all types of companies, ensuring legal compliance and hassle-free setup.
 
 
-</span>
+</strong>
 
 
         </li>
@@ -1641,7 +1949,7 @@ function closePdfModal(e) {
         98406 47844
       </a> or email: 
       <a href="javascript:void(0)" onclick="sendEmailAndWhatsapp('Legal Assistance')" style="color: #8B8000; text-decoration: underline;">
-        annaisavvyassociates.hotmail.com
+        annaisavvyassociates@hotmail.com
       </a>.
     </span>
     <span style="font-size: 19px; color: #fff; white-space: nowrap; margin-left: 50px;">
@@ -1650,7 +1958,7 @@ function closePdfModal(e) {
         98406 47844
       </a> or email: 
       <a href="javascript:void(0)" onclick="sendEmailAndWhatsapp('Legal Assistance')" style="color: #8B8000; text-decoration: underline;">
-        annaisavvyassociates.hotmail.com
+        annaisavvyassociates@hotmail.com
       </a>.
     </span>
   </div>
@@ -1793,20 +2101,34 @@ function closePdfModal(e) {
     navigate(currentCategory);
     resetFlashContent();
 
-    // 👇 extra: auto-scroll only for Real Estate
-    if (currentCategory === 'realestate') {
+    // helper function (NEEDED!)
+    function scrollWithOffset(sectionId, offset = 80) {
+      const sec = document.getElementById(sectionId);
+      if (!sec) return;
+
       setTimeout(() => {
-        const sec = document.getElementById('realestate');
+        const y = sec.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }, 300);
+    }
+
+    // existing scroll for real estate
+    if (currentCategory === "realestate") {
+      setTimeout(() => {
+        const sec = document.getElementById("realestate");
         if (sec) {
-          sec.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
-          });
+          sec.scrollIntoView({ behavior: "smooth", block: "end" });
         }
       }, 300);
     }
+
+    // NEW scroll for event
+    if (currentCategory === "event") {
+      scrollWithOffset("event", 60);
+    }
   };
 });
+
 
 
   flashContent.onclick = () => {
