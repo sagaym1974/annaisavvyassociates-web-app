@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js"></script>
+
+<script>
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoB6vT4X_G1Haprsi56kIZ9XRRZVdzaO8",
+    authDomain: "annai-savvy-associates.firebaseapp.com",
+    projectId: "annai-savvy-associates",
+    storageBucket: "annai-savvy-associates.firebasestorage.app",
+    messagingSenderId: "184599365463",
+    appId: "1:184599365463:web:b2625c8ccfb6db2be42012",
+    measurementId: "G-TGYT9QDWK8"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+  const analytics = firebase.analytics();
+</script>
+
+
+
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Annai Savvy Associates - Services</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f2f2f2;
+  }
+  header {
+    background-color: #232f3e;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 30px;
+    position: relative;
+    z-index: 10;
+  }
+  .logo img { height: 60px; }
+  .company-name { font-size: 24px; font-weight: bold; flex-grow: 1; margin-left: 10px; white-space: nowrap; }
+  nav a { color: white; text-decoration: none; margin: 0 15px; font-size: 16px; white-space: nowrap; cursor: pointer; }
+  nav a:hover { text-decoration: underline; }
+  #cart-total { background-color: #28a745; color: white; border-radius: 8px; padding: 6px 12px; font-weight:bold; white-space: nowrap; }
+  main {
+    margin: 20px;
+    position: relative;
+    z-index: 10;
+  }
+  #category-title { font-weight: bold; font-size: 20px; font-family: Arial, sans-serif; text-align: center; margin-bottom: 15px; }
+  .category-circle-container {
+    display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;
+  }
+  .category-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.25s ease, background-size 0.25s ease;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  .category-circle:hover {
+    transform: scale(3);
+    z-index: 100;
+    background-size: cover;
+  }
+  .category-circle span {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    pointer-events: none;
+    padding: 0 5px;
+    white-space: normal;
+  }
+  .category-circle.active { border: 3px solid #28a745; box-shadow: 0 0 10px #28a745; }
+  .category-line {
+    width: 130px; height: 3px; background: #333; margin: 5px auto 25px auto; border-radius: 1.5px;
+  }
+  #flashContent {
+    margin: 0 auto; max-width: 3000px; background-color: black; color: white;
+    border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 15px 30px 30px 30px; min-height: 50px; cursor: pointer;
+    font-size: 18px; text-align: center; position: relative; overflow: hidden;
+    z-index: 10;
+  }
+  section { display: none; }
+  section.active { display: block; }
+  .product-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px; margin-top: 20px;
+  }
+  .product-item {
+    position: relative; background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px;
+    text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex; flex-direction: column; justify-content: space-between; height: 320px;
+  }
+  .product-item img {
+    max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 5px; margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .selected-indicator {
+    position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; background-color: red;
+    border-radius: 50%; color: white; font-size: 12px; font-weight: bold; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    z-index: 10; pointer-events: none;
+  }
+  .button-group {
+    display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;
+  }
+  .product-item button {
+    background-color: #28a745; color: white; border: none; border-radius: 4px; padding: 8px 14px;
+    cursor: pointer; font-weight: bold; font-size: 14px;
+  }
+  .product-item button:hover { background-color: #218838; }
+  .qty-box {
+    display: flex; justify-content: center; align-items: center; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; height: 32px; margin-left: 8px;
+  }
+  .qty-box button {
+    background: #ddd; color: black; border: none; width: 28px; height: 32px; cursor: pointer; font-weight: bold;
+  }
+  .qty-box input {
+    width: 40px; text-align: center; border: none; outline: none; font-size: 14px; background: transparent;
+  }
+  #about-section, #contact-section {
+    max-width: 800px; margin: 20px auto 40px auto; background: white; padding: 25px 30px; border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .error-message { color: red; margin-top: 20px; font-weight: bold; }
+  #image-popup {
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; overflow: auto;
+  }
+  #popup-close-btn {
+    position: absolute; top: 10px; right: 10px; background: #fff; border: none; font-size: 20px;
+    font-weight: bold; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; z-index: 1010;
+  }
+  #popup-image {
+    max-width: 100%; max-height: 90vh; height: auto; width: auto; transition: transform 0.3s ease;
+  }
+  .background-video-container {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 25vh; overflow: hidden; z-index: -1;
+  }
+  #bgVideo {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+</style>
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="background-video-container">
+  <video autoplay muted loop playsinline id="bgVideo" preload="auto">
+    <source src="Videos/bg.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<header>
+  <div class="logo"><img src="Logo1.png" alt="Logo" /></div>
+  <div class="company-name">Annai Savvy Associates</div>
+  <nav>
+    <a onclick="navigate('landing')">Home</a>
+    <a onclick="navigate('about')">About Us</a>
+    <a onclick="navigate('contact')">Contact Us</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+    <button id="total-amount-button" style="background:gold; color:black; font-weight:bold; border:none; border-radius:6px; padding:6px 14px; cursor:default; margin-left:10px; display:none;">Total: ₹0</button>
+  </nav>
+</header>
+
+<section id="auth">
+  <form id="loginForm">
+    <input type="email" id="email" />
+    <input type="password" id="password" />
+    <button type="submit">Login</button>
+  </form>
+  <p id="loginStatus"></p>
+</section>
+
+
+<main>
+  <div id="landing" class="page">
+    <div id="category-title"><strong>Category of Services by our Team</strong></div>
+    <div class="category-circle-container" id="categories">
+      <div class="category-circle" data-category="jewelry" style="background-image:url('Stockphotos/Jewelry.png')"><span>Fashion Jewelry</span></div>
+      <div class="category-circle" data-category="realestate" style="background-image:url('Stockphotos/Real Estate.png')"><span>Real Estate</span></div>
+      <div class="category-circle" data-category="job" style="background-image:url('Stockphotos/Job Consultants.png')"><span>Job Consultancy</span></div>
+      <div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')"><span>Event Management</span></div>
+      <div class="category-circle" data-category="freight" style="background-image:url('Stockphotos/Freight Forwarding CHA.png')"><span>Freight/CHA Clearance</span></div>
+      <div class="category-circle" data-category="misc" style="background-image:url('Stockphotos/Others.png')"><span>Legal &amp; Taxation Services</span></div>
+    </div>
+    <div class="category-line"></div>
+    <div id="flashContent" title="Click to open selected category page"></div>
+  </div>
+
+  <section id="jewelry" class="page">
+    <h2>Jewelry Category</h2>
+    <div id="jewelry-error" class="error-message" style="display:none;"></div>
+    <div class="product-grid" id="jewelry-products"><p>Loading Jewelry products...</p></div>
+  </section>
+  <section id="realestate" class="page"><h2>Real Estate</h2><p>Content coming soon...</p></section>
+  <section id="job" class="page"><h2>Job Consultancy</h2><p>Content coming soon...</p></section>
+  <section id="event" class="page"><h2>Event Organizing</h2><p>Content coming soon...</p></section>
+  <section id="freight" class="page"><h2>Freight & CHA Clearance</h2><p>Content coming soon...</p></section>
+  <section id="misc" class="page"><h2>Miscellaneous Services</h2><p>Content coming soon...</p></section>
+  <section id="about" class="page"><h2>About Us</h2><p>We are the pioneers of the new era using <strong>artificial intelligence</strong> and multifunctions at one place.</p></section>
+  <section id="contact" class="page"><h2>Contact Us</h2><p>Hi dear sir/madam,</p><p>Call us: 9840647844 / 041 25634678</p><p>Email: <a href="mailto:annaisavvyassociates@hotmail.com">annaisavvyassociates@hotmail.com</a></p></section>
+</main>
+
+<!-- Image popup HTML -->
+<div id="image-popup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000; overflow: auto;">
+  <div style="position:relative; max-width:90vw; max-height:90vh;">
+    <button id="popup-close-btn" style="position:absolute; top:10px; right:10px; background:#fff; border:none; font-size:20px; font-weight:bold; width:35px; height:35px; border-radius:50%; cursor:pointer; z-index:1010;">×</button>
+    <img id="popup-image" src="" alt="Product Image" style="max-width:100%; max-height:90vh; height:auto; width:auto; border-radius:8px; box-shadow:0 0 20px #000; display:block; margin:0 auto; cursor:pointer; transition: transform 0.3s ease;" />
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Annai Savvy Associates. All rights reserved.</p>
+</footer>
+
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+  const categories = ['jewelry','realestate','job','event','freight','misc'];
+  const contentMap = {
+    jewelry: {
+      texts: ["Exquisite handcrafted Kerala Fashion jewellery.", "Wide range of original JD stones.", "Sourced from Kerala Manufacturer's, authentic and competitive Prices."],
+      images: []
+    },
+    realestate: {
+      texts: ["Premium residential and commercial properties.", "Expert assistance in buying and selling.", "Trusted real estate agents."],
+      images: []
+    },
+    job: {
+      texts: ["Trusted job consultancy for various industries.", "Opportunities for freshers & experienced.", "Career counselling and interview prep."],
+      images: []
+    },
+    event: {
+      texts: ["Professional event planning.", "Creative themes and seamless execution.", "Satisfaction with value packages."],
+      images: []
+    },
+    freight: {
+      texts: ["Efficient freight forwarding & CHA clearance.", "Timely delivery and competitive rates.", "Worldwide logistics experts."],
+      images: []
+    },
+    misc: {
+      texts: ["Miscellaneous services tailored for your needs.", "Personal assistance, legal aid, documentation.", "Reliable and trustworthy team."],
+      images: []
+    }
+  };
+
+  let currentCategory = 'jewelry';
+  let flashTextIndex = 0;
+  const flashContent = document.getElementById('flashContent');
+  let flashTextInterval;
+
+  function updateFlashContent() {
+    if (flashContent) {
+      flashContent.innerHTML = '';
+      const p = document.createElement('p');
+      p.textContent = contentMap[currentCategory].texts[flashTextIndex];
+      flashContent.appendChild(p);
+    }
+  }
+
+  function resetFlashContent() {
+    flashTextIndex = 0;
+    updateFlashContent();
+    clearInterval(flashTextInterval);
+    flashTextInterval = setInterval(() => {
+      flashTextIndex = (flashTextIndex + 1) % contentMap[currentCategory].texts.length;
+      updateFlashContent();
+    }, 4000);
+  }
+
+  function navigate(page) {
+    document.querySelectorAll('main .page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById(page);
+    if (el) {
+      el.classList.add('active');
+    }
+    if (page === 'landing') {
+      resetFlashContent();
+    } else {
+      clearInterval(flashTextInterval);
+    }
+    if (page === 'jewelry') {
+      loadJewelryData();
+    }
+    if (page === 'contact') {
+      setContactGreeting();
+    }
+  }
+
+  document.querySelectorAll('.category-circle').forEach(el => {
+    el.onclick = () => {
+      currentCategory = el.getAttribute('data-category');
+      document.querySelectorAll('.category-circle').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      navigate(currentCategory);
+      resetFlashContent();
+    };
+  });
+
+  flashContent.onclick = () => {
+    navigate(currentCategory);
+  };
+
+  async function loadJewelryData() {
+    const jewelryProductsContainer = document.getElementById('jewelry-products');
+    const jewelryError = document.getElementById('jewelry-error');
+    if (jewelryProductsContainer) jewelryProductsContainer.innerHTML = '<p>Loading Jewelry products...</p>';
+    if (jewelryError) jewelryError.style.display = "none";
+    try {
+      const response = await fetch('products_catalog.xlsx?t=' + new Date().getTime());
+      if (!response.ok) throw new Error('Failed to fetch Excel file');
+      const data = await response.arrayBuffer();
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet);
+      const products = json.map((item, idx) => ({
+  id: idx + 1,
+  // The key line below: matches first Excel column for image filename!
+  filename: item.filename ? 'images/' + item.filename : '',
+  name: item.name,
+  price: item.price,
+  stock: item.stock
+}));
+
+
+
+      renderJewelryProducts(products);
+      updateNavCart();
+    } catch (err) {
+      if (jewelryProductsContainer) jewelryProductsContainer.innerHTML = '';
+      if (jewelryError) {
+        jewelryError.style.display = "block";
+        jewelryError.textContent = err.message;
+      }
+    }
+  }
+
+  function renderJewelryProducts(products) {
+    const jewelryProductsContainer = document.getElementById('jewelry-products');
+    if (!jewelryProductsContainer) return;
+    jewelryProductsContainer.innerHTML = '';
+    const cart = getCart();
+
+    products.forEach(product => {
+      if (!product.filename || !product.name) return;
+      const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
+      const avail = product.stock - qtyInCart;
+      const soldOut = avail <= 0;
+      const productDiv = document.createElement('div');
+      productDiv.className = 'product-item';
+      productDiv.innerHTML = `
+        <img src="${product.filename}" alt="${product.name}" onerror="this.style.display='none';" class="product-image"/>
+        ${qtyInCart > 0 ? `<div class="selected-indicator">${qtyInCart}</div>` : ''}
+        <h3>${product.name}</h3>
+        <p>Price: ₹${product.price}</p>
+        <div class="availability" style="color:${soldOut ? 'red' : '#555'}">${soldOut ? 'Sold Out' : avail + ' units Available'}</div>
+        <div class="button-group">
+          <button class="add-btn" ${soldOut ? 'disabled' : ''} data-id="${product.id}">Add to Cart</button>
+          ${qtyInCart > 0 ? `
+            <div class="qty-box">
+              <button class="dec-btn" data-id="${product.id}">−</button>
+              <input type="text" value="${qtyInCart}" readonly />
+              <button class="inc-btn" data-id="${product.id}">+</button>
+            </div>` : ''}
+        </div>
+      `;
+      const addBtn = productDiv.querySelector('.add-btn');
+      const incBtn = productDiv.querySelector('.inc-btn');
+      const decBtn = productDiv.querySelector('.dec-btn');
+
+      if (addBtn) {
+        addBtn.addEventListener('click', e => {
+          addToCart(product.id, products);
+          renderJewelryProducts(products);
+        });
+      }
+      if (incBtn) {
+        incBtn.addEventListener('click', e => {
+          addToCart(product.id, products);
+          renderJewelryProducts(products);
+        });
+      }
+      if (decBtn) {
+        decBtn.addEventListener('click', e => {
+          removeFromCart(product.id, products);
+          renderJewelryProducts(products);
+        });
+      }
+      jewelryProductsContainer.appendChild(productDiv);
+    });
+  }
+
+  // Utility functions for cart management below...
+  function getCart() {
+    return JSON.parse(localStorage.getItem('cart') || '{}');
+  }
+  function saveCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+  function updateNavCart() {
+    const cart = getCart();
+    let count = 0, total = 0;
+    for (const id in cart) {
+      count += cart[id].quantity;
+      total += cart[id].quantity * cart[id].price;
+    }
+    const countElem = document.getElementById('cart-count');
+    if (countElem) countElem.textContent = count;
+    const totElem = document.getElementById('cart-total');
+    if (totElem) totElem.textContent = count > 0 ? 'Total ₹' + total : '';
+    const totalBtn = document.getElementById('total-amount-button');
+    if (totalBtn) {
+      if (total > 0) {
+        totalBtn.style.display = 'inline-block';
+        totalBtn.textContent = 'Total: ₹' + total;
+      } else {
+        totalBtn.style.display = 'none';
+      }
+    }
+  }
+  function addToCart(id, products) {
+    const cart = getCart();
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+    const qtyInCart = cart[id] ? cart[id].quantity : 0;
+    if (qtyInCart >= product.stock) {
+      alert('Stock limit reached!');
+      return;
+    }
+    if (!cart[id]) cart[id] = { ...product, img: product.filename, quantity: 0 };
+    cart[id].quantity++;
+    saveCart(cart);
+    updateNavCart();
+  }
+  function removeFromCart(id, products) {
+    const cart = getCart();
+    if (!cart[id]) return;
+    cart[id].quantity--;
+    if (cart[id].quantity <= 0) {
+      delete cart[id];
+    }
+    saveCart(cart);
+    updateNavCart();
+  }
+  function setContactGreeting() {
+    const p = document.querySelector('#contact p');
+    if (p) {
+      p.textContent = 'Hi dear sir/madam,';
+    }
+  }
+
+  // When page loads, setup event & initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.category-circle').forEach(c => c.classList.remove('active'));
+    document.querySelector('.category-circle[data-category="jewelry"]').classList.add('active');
+    navigate('jewelry');
+    resetFlashContent();
+
+    // Popup zoom setup
+    const popupImage = document.getElementById('popup-image');
+    const imagePopup = document.getElementById('image-popup');
+    const closeBtn = document.getElementById('popup-close-btn');
+
+    let currentZoomPercent = 90; // default zoom
+    const minZoom = 90;
+    const maxZoom = 270; // 3 times zoom
+    const zoomStep = 10;
+
+    function updateZoom() {
+      const scale = currentZoomPercent / 100;
+      popupImage.style.transform = `scale(${scale})`;
+    }
+
+    // Show popup zoomed image when clicking on product image
+    document.querySelector('.product-grid').addEventListener('click', (e) => {
+      if(e.target && e.target.classList.contains('product-image')) {
+        currentZoomPercent = minZoom; // reset zoom
+        popupImage.src = e.target.src;
+        updateZoom();
+        imagePopup.style.display = 'flex';
+      }
+    });
+
+    popupImage.addEventListener('click', () => {
+      currentZoomPercent += zoomStep;
+      if(currentZoomPercent > maxZoom) currentZoomPercent = minZoom;
+      updateZoom();
+    });
+    document.querySelector('#popup-close-btn').onclick = () => {
+      imagePopup.style.display='none';
+    };
+  });
+</script>
+<script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        document.getElementById("loginStatus").innerText = "Login successful!";
+      })
+      .catch(error => {
+        document.getElementById("loginStatus").innerText = "Error: " + error.message;
+      });
+  });
+
+</script>
+</body>
+</html>
