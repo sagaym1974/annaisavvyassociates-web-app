@@ -127,8 +127,8 @@ firebase.analytics();
   #flashContent {
     margin: 0 auto; max-width: 3000px; background-color: black; color: white;
     border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 15px 30px 30px 30px; min-height: 50px; cursor: pointer;
-    font-size: 18px; text-align: center; position: relative; overflow: hidden;
+    padding: 3px 8px 4px 8px; min-height: 25px; cursor: pointer;
+    font-size: 20px; text-align: center; position: relative; overflow: hidden;
     z-index: 10;
   }
   section { display: none; }
@@ -191,6 +191,22 @@ firebase.analytics();
   #bgVideo {
     width: 100%; height: 100%; object-fit: cover;
   }
+
+
+
+  /* 🚩 Fix: keep the circles section (landing) on top so it stays clickable */
+  #landing {
+    position: relative;
+    z-index: 200;
+  }
+
+
+
+
+
+
+
+
 </style>
 <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 </head>
@@ -237,9 +253,12 @@ firebase.analytics();
     <div id="category-title"><strong>Category of Services by our Team</strong></div>
     <div class="category-circle-container" id="categories">
       <div class="category-circle" data-category="jewelry" style="background-image:url('Stockphotos/Jewelry.png')"><span>Fashion Jewelry</span></div>
-      <div class="category-circle" data-category="realestate" style="background-image:url('Stockphotos/Real Estate.png')"><span>Real Estate</span></div>
+       <div class="category-circle" data-category="realestate"
+     style="background-image:url('Stockphotos/Real Estate.png')">
+  <span>Real Estate</span>
+</div>
       <div class="category-circle" data-category="job" style="background-image:url('Stockphotos/Job Consultants.png')"><span>Job Consultancy</span></div>
-      <div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')"><span>Event Management</span></div>
+      <!--<div class="category-circle" data-category="event" style="background-image:url('Stockphotos/Event Management.png')"><span>Event Management</span></div>-->
       <div class="category-circle" data-category="freight" style="background-image:url('Stockphotos/Freight Forwarding CHA.png')"><span>Freight/CHA Clearance</span></div>
       <div class="category-circle" data-category="misc" style="background-image:url('Stockphotos/Others.png')"><span>Legal &amp; Taxation Services</span></div>
     </div>
@@ -259,681 +278,472 @@ firebase.analytics();
 
 
 
+<!-- Real Estate -->
+<section id="realestate" class="page">
+  <style>
+  .Buyer, .Seller {
+      background: #FF0000;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.5em;
+      padding: 6px 22px;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px #000;
+      text-shadow: 2px 2px 9px #000;
+      display: inline-block;
+      margin-bottom: 10px;
+  }
 
-//Real Estate//
+  /* This will affect the whole page background while you're on this section,
+     same as your original */
+  body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0c153a;
+      color: #FFFFFF;
+  }
+  .background-logo {
+      background: url('file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png') center center no-repeat;
+      background-size: cover;
+      position: fixed;
+      top: 0; left: 0; width: 90vw; height: 100vh;
+      opacity: 0.35;
+      z-index: 0;
+  }
+  .re-container {
+      position: relative;
+      z-index: 1;
+      width: 80%;
+      margin: 40px auto;
+      padding: 10px 20px;
+      background: rgba(12, 21, 58, 0.85);
+      border-radius: 22px;
+      box-shadow: 0 6px 25px #FFFACD;
+  }
+  .re-header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 5px;
+  }
+  .re-header-logo {
+      height: 50px;
+      width: auto;
+      margin-right: 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #2226;
+  }
+  .re-top-banner {
+      text-align: center;
+      color: #FFFACD;
+      font-size: 1.5em;
+      font-weight: bold;
+      letter-spacing: 1px;
+  }
+  .re-subtitle {
+      text-align: center;
+      color: #ffd700;
+      margin-bottom: 24px;
+      font-size: 1.3em;
+      font-weight: 500;
+  }
+  .re-feature-section {
+      background: rgba(12, 21, 58, 0.86);
+      padding: 7px 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      color: #D3D3D3;
+      font-weight: bold;
+      font-size: 1em;
+      text-shadow: 2px 2px 9px #000;
+      border: 2px solid #000;
+      box-shadow: 0 8px 32px #FFFACD;
+  }
+  .re-highlight-red {
+      background: #FF0000;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.13em;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 2.2px solid #000;
+      display: inline-block;
+      margin-bottom: 14px;
+      text-shadow: 2px 2px 6px #000;
+      box-shadow: 0 2px 10px #0004;
+      letter-spacing: 0.04em;
+  }
+  ul.re-features {
+      list-style: disc;
+      padding-left: 22px;
+      margin-top: 8px;
+  }
+  ul.re-features li {
+      margin-bottom: 10px;
+      font-size: 1.09em;
+      color: #fff;
+      font-weight: normal;
+      text-shadow: none;
+  }
+  .re-main-section {
+      display: flex;
+      justify-content: space-around;
+      gap: 150px;
+  }
+  .re-option-card {
+      border: 2px solid #000;
+      border-radius: 14px;
+      width: 41%;
+      padding: 18px 16px 18px 16px;
+      box-shadow: 0 8px 32px #FFFACD;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+  }
+  .re-option-title {
+      color: #FFFF00;
+      font-size: 1em;
+      font-weight: 700;
+      margin-bottom: 7px;
+  }
+  .re-option-desc {
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      font-size: 1em;
+      text-align: center;
+      min-height: 50px;
+  }
+  .re-option-tip {
+      color: #ffd700;
+      font-size: 1em;
+      margin-bottom: 18px;
+      text-align: center;
+  }
+
+  @keyframes re-blinkBtn {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+  }
+  .re-action-btn {
+      background: #ffd700;
+      color: #1a2364;
+      font-weight: bold;
+      font-size: 1.19em;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 35px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 10px #FFFACD;
+      transition: background 0.2s;
+      animation: re-blinkBtn 1.1s linear infinite;
+  }
+  .re-action-btn:hover {
+      background: #eecc00;
+  }
+  @media (max-width: 900px) {
+      .re-main-section {
+          flex-direction: column;
+          gap: 28px;
+      }
+      .re-option-card {
+          width: 100%;
+      }
+  }
+  .re-modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(12,21,58,0.79); z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+  }
+  .re-modal-content {
+      background: #fff; padding: 30px 38px; min-width: 350px;
+      border-radius: 15px; position: relative; color: #0c153a;
+      box-shadow: 0 8px 32px #FFFACD;
+      max-width: 95vw;
+  }
+  .re-close-btn {
+      background: transparent; color: #eecc00; border: none; font-size: 1.75em;
+      position: absolute; top: 9px; right: 18px; cursor: pointer;
+  }
+  .re-form-btn {
+      background: #ffd700; color: #1a2364; border: none; padding: 9px 22px;
+      border-radius: 7px; font-weight: bold; font-size: 1em; margin-top: 9px;
+      cursor: pointer;
+  }
+  .re-form-btn:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+  .re-form-group { margin-bottom: 13px; }
+  .re-form-group label { font-weight: 300; }
+  .re-form-group input, .re-form-group textarea {
+      padding: 8px; width: 50%; border-radius: 7px;
+      border: 1px solid #ccc; margin-top: 4px;
+  }
+  .re-checkbox-row { display: flex; gap: 18px; margin-top: 8px; margin-bottom: 12px; }
+  .re-radio-row { display: flex; gap: 24px; align-items: center; margin-bottom: 12px; }
+
+  /* FLASH MARQUEE BAR */
+  .re-flash-bar-fixed {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100vw;
+      background: #FF0000;
+      border-top: 3px solid #fff;
+      z-index: 10000;
+      padding: 0;
+      overflow: hidden;
+  }
+  .re-flash-bar-track {
+      display: flex;
+      width: max-content;
+      animation: re-marquee-continuous 35s linear infinite;
+      align-items: center;
+  }
+  .re-flash-bar-text {
+      display: inline-block;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.75em;
+      letter-spacing: 1.2px;
+      text-shadow: 0 0 9px #000, 0 0 18px #000;
+      white-space: nowrap;
+      padding-right: 68px;
+  }
+  @keyframes re-marquee-continuous {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+  }
+  </style>
+
+  <div class="background-logo"></div>
+
+  <div class="re-container">
+      <div class="re-header-flex">
+          <img src="file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png"
+               alt="Company Logo"
+               class="re-header-logo">
+          <div class="re-top-banner">
+              Annai Savvy Associates [Real Estates]
+          </div>
+      </div>
+      <div class="re-subtitle">
+          Your Satisfaction, Our Promise
+      </div>
+      <div class="re-feature-section">
+          <span class="re-highlight-red">100% Reliable place for your Real Estates Requirements</span>
+          <ul class="re-features">
+              <li>We assure your satisfaction achieved</li>
+              <li>No Compromise on your requirements</li>
+              <li>We ensure our commission is very competitive and feasible to Buyers and Sellers</li>
+          </ul>
+      </div>
+      <div class="re-main-section">
+          <div class="re-option-card">
+              <div class="Buyer">Buyer / Tenant</div>
+              <div class="re-option-title">Satisfaction-Guaranteed !!! - Happy Buy !!!</div>
+              <div class="re-option-desc">
+                  Ensure fill your details with exact information's to speedup your requirements    
+              </div>
+              <div class="re-option-tip">
+                  Click the Below button to fill in your property you are expecting to Buy
+              </div>
+              <button class="re-action-btn" onclick="openEstateForm('buyer')">Click Here to Buy</button>
+          </div>
+          <div class="re-option-card">
+              <div class="Seller">Seller / Owner</div>
+              <div class="re-option-title">Value Guaranteed !!! Happy Sell !!!</div>
+              <div class="re-option-desc">
+                  Ensure fill your details with exact information's to speedup your requirements   
+              </div>
+              <div class="re-option-tip">
+                  Click the below button to fill in your property you are Selling
+              </div>
+              <button class="re-action-btn" onclick="openEstateForm('seller')">Click Here to Sell</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="re-modal-overlay" id="estateModal">
+      <div class="re-modal-content">
+          <button class="re-close-btn" onclick="closeEstateForm()">×</button>
+          <form id="estateForm">
+              <div id="estateFormTitle" style="font-size:1.3em;font-weight:bold;margin-bottom:16px;"></div>
+              <div class="re-form-group">
+                  <label>Name:</label>
+                  <input type="text" name="name" required>
+              </div>
+              <div class="re-form-group">
+                  <label>Father Name:</label>
+                  <input type="text" name="father_name" required>
+              </div>
+              <div class="re-form-group">
+                  <label>Contact Mobile number:</label>
+                  <input type="text" name="mobile" pattern="[0-9]{10}" required>
+              </div>
+              <div class="re-form-group">
+                  <label>Contact Email (optional):</label>
+                  <input type="email" name="email">
+              </div>
+              <div class="re-form-group">
+                  <label id="reLocationLabel"></label>
+                  <input type="text" name="location" required>
+              </div>
+              <div class="re-form-group">
+                  <label id="reBudgetLabel"></label>
+                  <input type="text" name="budget" required>
+              </div>
+              <div class="re-form-group">
+                  <label id="reSizeLabel"></label>
+                  <input type="text" name="size" required>
+              </div>
+              <div class="re-form-group">
+                  <label>What is your expectation of property type?</label>
+                  <div class="re-checkbox-row">
+                      <label><input type="checkbox" name="property_type" value="Flat/Apartment"> Flat/Apartment</label>
+                      <label><input type="checkbox" name="property_type" value="Land"> Land</label>
+                      <label><input type="checkbox" name="property_type" value="Individual House"> Individual House</label>
+                  </div>
+              </div>
+              <div class="re-form-group">
+                  <label style="color:#c48a11;">
+                      Our commission for Rental is 1Month of Rent and for Property Buying 1 % on Value. Are you ok with this?
+                  </label>
+                  <div class="re-radio-row">
+                      <label><input type="radio" name="commission_ok" value="Yes" required onclick="toggleEstateSend(true)"> Yes</label>
+                      <label><input type="radio" name="commission_ok" value="No" required onclick="toggleEstateSend(false)"> No</label>
+                  </div>
+              </div>
+              <button type="submit" class="re-form-btn" id="estateSendBtn" disabled>Send</button>
+          </form>
+      </div>
+  </div>
+
+  <!-- Flash bar -->
+  <div class="re-flash-bar-fixed">
+      <div class="re-flash-bar-track">
+          <span class="re-flash-bar-text">
+              Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
+          </span>
+          <span class="re-flash-bar-text">
+              Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
+          </span>
+      </div>
+  </div>
+
+  <script>
+  function openEstateForm(type) {
+      const modal = document.getElementById('estateModal');
+      const form  = document.getElementById('estateForm');
+
+      form.reset();
+      document.getElementById('estateSendBtn').disabled = true;
+
+      const isBuyer = (type === 'buyer');
+
+      document.getElementById('estateFormTitle').innerText =
+          isBuyer ? 'Buyer / Tenant Information' : 'Seller / Owner Information';
+
+      document.getElementById('reLocationLabel').innerText =
+          isBuyer ? 'Which location you are seeing?' : 'Which location is your property?';
+
+      document.getElementById('reBudgetLabel').innerText =
+          isBuyer ? "What\'s your Budget?" : "What\'s your expected sale/rent value?";
+
+      document.getElementById('reSizeLabel').innerText =
+          isBuyer ? "What\'s your expectation of property size?" : "What\'s your property size?";
+
+      form.setAttribute('data-type', type);
+      modal.style.display = 'flex';
+  }
+
+  function closeEstateForm() {
+      document.getElementById('estateModal').style.display = 'none';
+      document.getElementById('estateForm').reset();
+  }
+
+  function toggleEstateSend(enable) {
+      document.getElementById('estateSendBtn').disabled = !enable;
+      if (!enable) setTimeout(closeEstateForm, 700);
+  }
+
+  document.getElementById('estateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const type = form.getAttribute('data-type') || 'buyer';
+      const typeLabel = (type === 'buyer') ? 'Buyer / Tenant' : 'Seller / Owner';
+
+      const today = new Date();
+      const day   = String(today.getDate()).padStart(2, '0');
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const month = monthNames[today.getMonth()];
+      const year  = today.getFullYear();
+      const dateStr = day + '/' + month + '/' + year;
+
+      const subject = typeLabel + ' Query ' + dateStr;
+
+      const name       = form.elements['name'].value;
+      const fatherName = form.elements['father_name'].value;
+      const mobile     = form.elements['mobile'].value;
+      const email      = form.elements['email'].value;
+      const location   = form.elements['location'].value;
+      const budget     = form.elements['budget'].value;
+      const size       = form.elements['size'].value;
+
+      const propertyTypes = Array.from(
+          form.querySelectorAll('input[name="property_type"]:checked')
+      ).map(cb => cb.value);
+
+      const commissionEl = form.querySelector('input[name="commission_ok"]:checked');
+      const commission   = commissionEl ? commissionEl.value : '';
+
+      const bodyLines = [
+          'Name: ' + name,
+          'Father Name: ' + fatherName,
+          'Contact Mobile number: ' + mobile,
+          'Contact Email (optional): ' + email,
+          'Location: ' + location,
+          'Budget / Expected Value: ' + budget,
+          'Property Size: ' + size,
+          'Expectation of property type: ' + (propertyTypes.length ? propertyTypes.join(', ') : 'None selected'),
+          'Commission acceptance: ' + commission
+      ];
+
+      const body = bodyLines.join('\\n');
+
+      closeEstateForm();
+
+      const mailtoLink =
+          'mailto:annaisavvyassociates@hotmail.com'
+          + '?subject=' + encodeURIComponent(subject)
+          + '&body='    + encodeURIComponent(body);
+
+      window.location.href = mailtoLink;
+  });
 
 
-<section id="realestate" class="page"><h2>Real Estate   "Refresh to move to other selections"</h2><p
 
-<meta charset="UTF-8" />
-<title>Annai Savvy Associates [Real Estate]</title>
-<style>
-.Buyer, .Seller {
-    background: #FF0000;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.5em;
-    padding: 6px 22px;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px #000;
-    text-shadow: 2px 2px 9px #000;
-    display: inline-block;
-    margin-bottom: 10px;
-}
-
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #0c153a;
-    color: #FFFFFF;
-}
-.background-logo {
-    background: url('file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png') center center no-repeat;
-    background-size: cover;
-    position: fixed;
-    top: 0; left: 0; width: 90vw; height: 100vh;
-    opacity: 0.35;
-    z-index: 0;
-}
-.container {
-    position: relative;
-    z-index: 1;
-    width: 80%;
-    margin: 40px auto;
-    padding: 20px 40px;
-    background: rgba(12, 21, 58, 0.85);
-    border-radius: 22px;
-    box-shadow: 0 6px 25px #FFFACD;
-}
-.header-flex {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    margin-bottom: 5px;
-}
-.header-logo {
-    height: 100px;
-    width: auto;
-    margin-right: 12px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px #2226;
-}
-.top-banner {
-    text-align: center;
-    color: #FFFACD;
-    font-size: 2em;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-.subtitle {
-    text-align: center;
-    color: #ffd700;
-    margin-bottom: 24px;
-    font-size: 1.3em;
-    font-weight: 500;
-}
-.feature-section {
-    background: rgba(12, 21, 58, 0.86);
-    padding: 22px 16px;
-    border-radius: 12px;
-    margin-bottom: 24px;
-    color: #D3D3D3;
-    font-weight: bold;
-    font-size: 1.3em;
-    text-shadow: 2px 2px 9px #000;
-    border: 2px solid #000;
-    /* Added Shadow for prominence */
-    box-shadow: 0 8px 32px #FFFACD;
-}
-.highlight-red {
-    background: #FF0000;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.13em;
-    padding: 8px 18px;
-    border-radius: 8px;
-    border: 2.2px solid #000;
-    display: inline-block;
-    margin-bottom: 14px;
-    text-shadow: 2px 2px 6px #000;
-    box-shadow: 0 2px 10px #0004;
-    letter-spacing: 0.04em;
-}
-ul.features {
-    list-style: disc;
-    padding-left: 22px;
-    margin-top: 8px;
-}
-ul.features li {
-    margin-bottom: 10px;
-    font-size: 1.09em;
-    color: #fff;
-    font-weight: normal;
-    text-shadow: none;
-}
-.main-section {
-    display: flex;
-    justify-content: space-around;
-    gap: 150px;
-}
-.option-card {
-    border: 2px solid #000;
-    border-radius: 14px;
-    width: 41%;
-    padding: 28px 16px 22px 16px;
-    box-shadow: 0 8px 32px #FFFACD;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-.just-one-percent {
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    background: #ffd700;
-    color: #0c153a;
-    border-radius: 18px;
-    font-weight: bold;
-    padding: 8px 20px;
-    font-size: 4em;
-    box-shadow: 0 2px 8px #FFFACD;
-}
-.option-title {
-    color: #FFFF00;
-    font-size: 1.75em;
-    font-weight: 700;
-    margin-bottom: 7px;
-}
-.option-desc {
-    color: #FFFFFF;
-    margin-bottom: 20px;
-    font-size: 1.25em;
-    text-align: center;
-    min-height: 50px;
-}
-.option-tip {
-    color: #ffd700;
-    font-size: 1.04em;
-    margin-bottom: 18px;
-    text-align: center;
-}
-
-@keyframes blinkBtn {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
-}
-.action-btn {
-    background: #ffd700;
-    color: #1a2364;
-    font-weight: bold;
-    font-size: 1.19em;
-    border: none;
-    border-radius: 8px;
-    padding: 13px 35px;
-    cursor: pointer;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 10px #FFFACD;
-    transition: background 0.2s;
-    animation: blinkBtn 1.1s linear infinite;
-}
-.action-btn:hover {
-    background: #eecc00;
-}
-@media (max-width: 900px) {
-    .main-section {
-        flex-direction: column;
-        gap: 28px;
-    }
-    .option-card {
-        width: 100%;
-    }
-}
-.modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(12,21,58,0.79); z-index: 9999;
-    display: none; align-items: center; justify-content: center;
-}
-.modal-content {
-    background: #fff; padding: 30px 38px; min-width: 350px;
-    border-radius: 15px; position: relative; color: #0c153a;
-    box-shadow: 0 8px 32px #FFFACD;
-    max-width: 95vw;
-}
-.close-btn {
-    background: transparent; color: #eecc00; border: none; font-size: 1.75em;
-    position: absolute; top: 9px; right: 18px; cursor: pointer;
-}
-.form-btn, .form-radio {
-    background: #ffd700; color: #1a2364; border: none; padding: 9px 22px;
-    border-radius: 7px; font-weight: bold; font-size: 1em; margin-top: 9px;
-    cursor: pointer;
-}
-.form-btn:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
-.form-group { margin-bottom: 13px; }
-label {  font-weight: 300; }
-input, textarea, select { padding: 8px; width: 50%; border-radius: 7px; border: 1px solid #ccc; margin-top: 4px;}
-.checkbox-row { display: flex; gap: 18px; margin-top: 8px; margin-bottom: 12px; }
-.radio-row { display: flex; gap: 24px; align-items: center; margin-bottom: 12px; }
-
-/* FLASH MARQUEE BAR */
-.flash-bar-fixed {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100vw;
-    background: #FF0000;
-    border-top: 3px solid #fff;
-    z-index: 10000;
-    padding: 0;
-    overflow: hidden;
-}
-.flash-bar-track {
-    display: flex;
-    width: max-content;
-    animation: marquee-continuous 35s linear infinite;
-    align-items: center;
-}
-.flash-bar-text {
-    display: inline-block;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.75em;
-    letter-spacing: 1.2px;
-    text-shadow: 0 0 9px #000, 0 0 18px #000;
-    white-space: nowrap;
-    padding-right: 68px;
-}
-@keyframes marquee-continuous {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-
-
-</style>
-</head>
-<body>
-<div class="background-logo"></div>
-<div class="container">
-    <div class="header-flex">
-        <img src="file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png"
-             alt="Company Logo"
-             class="header-logo">
-        <div class="top-banner">
-            Annai Savvy Associates [Real Estates]
-        </div>
-    </div>
-    <div class="subtitle">
-        Your Satisfaction, Our Promise
-    </div>
-    <div class="feature-section">
-        <span class="highlight-red">100% Reliable place for your Real Estates Requirements</span>
-        <ul class="features">
-            <li>We assure your satisfaction achieved</li>
-            <li>No Compromise on your requirements</li>
-            <li>We ensure our commission is very competitive and feasible to Buyers and Sellers</li>
-        </ul>
-    </div>
-    <div class="main-section">
-        <div class="option-card">
-            <div class="Buyer">Buyer / Tenant</div>
-            <div class="option-title">Satisfaction-Guaranteed !!! - Happy Buy !!!</div>
-            <div class="option-desc">
-            Ensure fill your details with exact information's to speedup your requirements    
-            </div>
-            <div class="option-tip">
-            Click the Below button to fill in your property you are expecting to Buy
-            </div>
-            <button class="action-btn" onclick="reOpenForm('buyer')">Click Here to Buy</button>
-        </div>
-        <div class="option-card">
-            <div class="Seller">Seller / Owner</div>
-            <div class="option-title">Value Guaranteed !!! Happy Sell !!!</div>
-            <div class="option-desc">
-             Ensure fill your details with exact information's to speedup your requirements   
-            </div>
-            <div class="option-tip">
-                Click the below button to fill in your property you are Selling
-            </div>
-            <button class="action-btn" onclick="reOpenForm('seller')">Click Here to Sell</button>
-        </div>
-    </div>
-</div>
-<div class="modal-overlay" id="modalForm">
-    <div class="modal-content">
-        <button class="close-btn" onclick="closeForm()">×</button>
-        <form id="estateForm">
-            <div id="formTitle" style="font-size:1.3em;font-weight:bold;margin-bottom:16px;"></div>
-            <div class="form-group">
-                <label>Name:</label>
-                <input type="text" name="name" required>
-            </div>
-            <div class="form-group">
-                <label>Father Name:</label>
-                <input type="text" name="father_name" required>
-            </div>
-            <div class="form-group">
-                <label>Contact Mobile number:</label>
-                <input type="text" name="mobile" pattern="[0-9]{10}" required>
-            </div>
-            <div class="form-group">
-                <label>Contact Email (optional):</label>
-                <input type="email" name="email">
-            </div>
-            <div class="form-group">
-                <label id="locationLabel"></label>
-                <input type="text" name="location" required>
-            </div>
-            <div class="form-group">
-                <label id="budgetLabel"></label>
-                <input type="text" name="budget" required>
-            </div>
-            <div class="form-group">
-                <label id="sizeLabel"></label>
-                <input type="text" name="size" required>
-            </div>
-            <div class="form-group">
-                <label>What is your expectation of property type?</label>
-                <div class="checkbox-row">
-                    <label>
-                        <input type="checkbox" name="property_type" value="Flat/Apartment">
-                        Flat/Apartment
-                    </label>
-                    <label>
-                        <input type="checkbox" name="property_type" value="Land">
-                        Land
-                    </label>
-                    <label>
-                        <input type="checkbox" name="property_type" value="Individual House">
-                        Individual House
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label style="color:#c48a11;">Our commission for Rental is 1Month of Rent and for Property Buying 2 % on Value. Are you ok with this?</label>
-                <div class="radio-row">
-                    <label><input type="radio" name="commission_ok" value="Yes" required onclick="toggleSendBtn(true)"> Yes</label>
-                    <label><input type="radio" name="commission_ok" value="No" required onclick="toggleSendBtn(false)"> No</label>
-                </div>
-            </div>
-            <button type="submit" class="form-btn" id="sendBtn" disabled>Send</button>
-        </form>
-    </div>
-</div>
-<!-- Flash bar -->
-<div class="flash-bar-fixed">
-    <div class="flash-bar-track">
-        <span class="flash-bar-text">
-            Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
-        </span>
-        <span class="flash-bar-text">
-            Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
-        </span>
-    </div>
-</div>
-<script>
-function closeForm() {
-    document.getElementById('modalForm').style.display = 'none';
-    document.getElementById('estateForm').reset();
-}
-function toggleSendBtn(enable) {
-    document.getElementById('sendBtn').disabled = !enable;
-    if (!enable) setTimeout(closeForm, 700);
-}
-document.getElementById('estateForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const type = form.getAttribute('data-type');
-    const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
-    const subject = `Real Estate Enquiry "${type.charAt(0).toUpperCase()+type.slice(1)}" - ${dateStr}`;
-    let body = '';
-    Array.from(form.elements).forEach(el => {
-        if (el.name && el.type !== 'button' && el.type !== 'submit' && el.type !== 'checkbox') {
-            body += `${el.previousElementSibling ? el.previousElementSibling.innerText : el.name}: ${el.value}\n`;
+function scrollToBottom(id) {
+    setTimeout(() => {
+        let section = document.getElementById(id);
+        if (section) {
+            window.scrollTo({
+                top: section.offsetTop + section.scrollHeight,
+                behavior: "smooth"
+            });
         }
-    });
-    const checkedTypes = [];
-    form.querySelectorAll('input[name="property_type"]:checked').forEach(cb => checkedTypes.push(cb.value));
-    body += 'Expectation of property type: ' + (checkedTypes.length > 0 ? checkedTypes.join(', ') : 'None selected') + '\n';
-
-    closeForm();
-    fetch('/send-estate-mail', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            type, subject, body,
-            to: 'annaisavvyassociates@hotmail.com'
-        })
-    }).then(res => {
-        if (!res.ok) {
-            alert('There was a problem sending your details. Try again.');
-        }
-    });
-};
-</script>
-
-
-
-</p></section>
-  
-
- 
-
-<section id="realestate" class="page"><h2>Real Estate   "Refresh to move to other selections"</h2><p
-
-<meta charset="UTF-8" />
-<title>Annai Savvy Associates [Real Estate]</title>
-<style>
-/* All your original CSS remains exactly the same */
-.Buyer, .Seller {
-    background: #FF0000;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.5em;
-    padding: 6px 22px;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px #000;
-    text-shadow: 2px 2px 9px #000;
-    display: inline-block;
-    margin-bottom: 10px;
+    }, 500);
 }
 
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #0c153a;
-    color: #FFFFFF;
-}
-/* ... (rest of your original styles unchanged) ... */
-</style>
-</head>
-<body>
-<div class="background-logo"></div>
-<div class="container">
-    <div class="header-flex">
-        <img src="file:///C:/Users/VIJAY/OneDrive/Web%20Photo%20Stocks/public/Logo1.png"
-             alt="Company Logo"
-             class="header-logo">
-        <div class="top-banner">
-            Annai Savvy Associates [Real Estates]
-        </div>
-    </div>
-    <div class="subtitle">
-        Your Satisfaction, Our Promise
-    </div>
-    <div class="feature-section">
-        <span class="highlight-red">100% Reliable place for your Real Estates Requirements</span>
-        <ul class="features">
-            <li>We assure your satisfaction achieved</li>
-            <li>No Compromise on your requirements</li>
-            <li>We ensure our commission is very competitive and feasible to Buyers and Sellers</li>
-        </ul>
-    </div>
-    <div class="main-section">
-        <div class="option-card">
-            <div class="Buyer">Buyer</div>
-            <div class="option-title">Satisfaction-Guaranteed !!! - Happy Buy !!!</div>
-            <div class="option-desc">
-            Ensure fill your details with exact information's to speedup your requirements    
-            </div>
-            <div class="option-tip">
-            Click the Below button to fill in your property you are expecting to Buy
-            </div>
-            <button class="action-btn" onclick="openFormRE('buyer')">Click Here to Buy</button>
-        </div>
-        <div class="option-card">
-            <div class="Seller">Seller</div>
-            <div class="option-title">Value Guaranteed !!! Happy Sell !!!</div>
-            <div class="option-desc">
-             Ensure fill your details with exact information's to speedup your requirements   
-            </div>
-            <div class="option-tip">
-                Click the below button to fill in your property you are Selling
-            </div>
-            <button class="action-btn" onclick="openFormRE('seller')">Click Here to Sell</button>
-        </div>
-    </div>
-</div>
-<div class="modal-overlay" id="modalForm">
-    <div class="modal-content">
-        <button class="close-btn" onclick="closeForm()">×</button>
-        <form id="estateForm">
-            <div id="formTitle" style="font-size:1.3em;font-weight:bold;margin-bottom:16px;"></div>
-            <div class="form-group">
-                <label>Name:</label>
-                <input type="text" name="name" required>
-            </div>
-            <div class="form-group">
-                <label>Father Name:</label>
-                <input type="text" name="father_name" required>
-            </div>
-            <div class="form-group">
-                <label>Contact Mobile number:</label>
-                <input type="text" name="mobile" pattern="[0-9]{10}" required>
-            </div>
-            <div class="form-group">
-                <label>Contact Email (optional):</label>
-                <input type="email" name="email">
-            </div>
-            <div class="form-group">
-                <label id="locationLabel"></label>
-                <input type="text" name="location" required>
-            </div>
-            <div class="form-group">
-                <label id="budgetLabel"></label>
-                <input type="text" name="budget" required>
-            </div>
-            <div class="form-group">
-                <label id="sizeLabel"></label>
-                <input type="text" name="size" required>
-            </div>
-            <div class="form-group">
-                <label>What is your expectation of property type?</label>
-                <div class="checkbox-row">
-                    <label>
-                        <input type="checkbox" name="property_type" value="Flat/Apartment">
-                        Flat/Apartment
-                    </label>
-                    <label>
-                        <input type="checkbox" name="property_type" value="Land">
-                        Land
-                    </label>
-                    <label>
-                        <input type="checkbox" name="property_type" value="Individual House">
-                        Individual House
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label style="color:#c48a11;">Our commission for Rental is 1Month of Rent and for Property Buying 1 % on Value. Are you ok with this?</label>
-                <div class="radio-row">
-                    <label><input type="radio" name="commission_ok" value="Yes" required onclick="toggleSendBtn(true)"> Yes</label>
-                    <label><input type="radio" name="commission_ok" value="No" required onclick="toggleSendBtn(false)"> No</label>
-                </div>
-            </div>
-            <button type="submit" class="form-btn" id="sendBtn" disabled>Send</button>
-        </form>
-    </div>
-</div>
-<!-- Flash bar and other code unchanged -->
-<div class="flash-bar-fixed">
-    <div class="flash-bar-track">
-        <span class="flash-bar-text">
-            Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
-        </span>
-        <span class="flash-bar-text">
-            Dear Customers, You are in the Right Place !!! if you have any Queries or clarifications needed please call us on 9840647844 through our mobile or eMail "annaisavvyassociates@hotmail.com" please mention a word "Query" in the subject to act quickly, Have a Nice Day !!!
-        </span>
-    </div>
-</div>
-<script>
-function reOpenForm(type) {
-    const modal = document.getElementById('modalForm');
-    const form  = document.getElementById('estateForm');
 
-    // Reset form and disable Send button
-    form.reset();
-    document.getElementById('sendBtn').disabled = true;
 
-    const isBuyer = (type === 'buyer');
 
-    // Set title and labels
-    document.getElementById('formTitle').innerText =
-        isBuyer ? 'Buyer / Tenant Information' : 'Seller / Owner Information';
 
-    document.getElementById('locationLabel').innerText =
-        isBuyer ? 'Which location you are seeing?' : 'Which location is your property?';
 
-    document.getElementById('budgetLabel').innerText =
-        isBuyer ? "What's your Budget?" : "What's your expected sale/rent value?";
+  </script>
+</section>
 
-    document.getElementById('sizeLabel').innerText =
-        isBuyer ? "What's your expectation of property size?" : "What's your property size?";
-
-    // Store type so we know later
-    form.setAttribute('data-type', type);
-
-    modal.style.display = 'flex';
-}
-
-function closeForm() {
-    document.getElementById('modalForm').style.display = 'none';
-    document.getElementById('estateForm').reset();
-}
-
-function toggleSendBtn(enable) {
-    document.getElementById('sendBtn').disabled = !enable;
-    // If "No" is clicked, close form after short delay
-    if (!enable) setTimeout(closeForm, 700);
-}
-
-// Handle form submit
-document.getElementById('estateForm').onsubmit = function(e) {
-    e.preventDefault();
-    const form = e.target;
-
-    const type = form.getAttribute('data-type') || 'buyer';
-    const typeLabel = (type === 'buyer') ? 'Buyer / Tenant' : 'Seller / Owner';
-
-    // Date in dd/Mon/yyyy (e.g. 30/Nov/2025)
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const month = monthNames[today.getMonth()];
-    const year = today.getFullYear();
-    const dateStr = `${day}/${month}/${year}`;
-
-    const subject = `${typeLabel} Query ${dateStr}`;
-
-    // Build body manually line by line
-    const name        = form.elements['name'].value;
-    const fatherName  = form.elements['father_name'].value;
-    const mobile      = form.elements['mobile'].value;
-    const email       = form.elements['email'].value;
-    const location    = form.elements['location'].value;
-    const budget      = form.elements['budget'].value;
-    const size        = form.elements['size'].value;
-
-    const propertyTypes = Array
-        .from(form.querySelectorAll('input[name="property_type"]:checked'))
-        .map(cb => cb.value);
-
-    const commissionEl = form.querySelector('input[name="commission_ok"]:checked');
-    const commission   = commissionEl ? commissionEl.value : '';
-
-    const bodyLines = [
-        `Name: ${name}`,
-        `Father Name: ${fatherName}`,
-        `Contact Mobile number: ${mobile}`,
-        `Contact Email (optional): ${email}`,
-        `Location: ${location}`,
-        `Budget / Expected Value: ${budget}`,
-        `Property Size: ${size}`,
-        `Expectation of property type: ${propertyTypes.length ? propertyTypes.join(', ') : 'None selected'}`,
-        `Commission acceptance: ${commission}`
-    ];
-
-    const body = bodyLines.join('\n');
-
-    // Close the web form
-    closeForm();
-
-    // Open default mail client with filled mail
-    const mailtoLink =
-        'mailto:annaisavvyassociates@hotmail.com'
-        + '?subject=' + encodeURIComponent(subject)
-        + '&body='    + encodeURIComponent(body);
-
-    window.location.href = mailtoLink;
-};
-</script>
-</p></section>
 
 
 
@@ -942,8 +752,6 @@ document.getElementById('estateForm').onsubmit = function(e) {
 
 
 <section id="job" class="page">
-<h2>Job Consultancy "Refresh to move to other selections"</h2>
-
 <style>
 /* YOUR EXACT ORIGINAL CSS - 100% UNCHANGED */
 :root {
@@ -968,7 +776,7 @@ body {
 }
 
 .job-consultancy-container {
-  background: #8B004B;
+  background: #e6e6e6;   /* light grey */
   color: var(--text-main);
   padding: 20px;
   border-radius: 12px;
@@ -987,9 +795,9 @@ body {
     position: relative;
     z-index: 1;
     width: 80%;
-    margin: 40px auto;
-    padding: 20px 40px;
-    background: #ffe6f0;
+    margin: 10px auto 5px auto;   /* moved higher */
+    padding: 10px 20px;           /* smaller height */
+    background: #ffe6f0;          /* pink (or your grey if you changed it) */
     border-radius: 22px;
     box-shadow: 0 6px 25px var(--shadow-main);
 }
@@ -1005,7 +813,7 @@ body {
     margin-bottom: 5px;
 }
 .header-logo {
-    height: 100px;
+    height: 50px;
     width: auto;
     margin-right: 12px;
     border-radius: 10px;
@@ -1013,10 +821,10 @@ body {
 }
 .top-banner {
     background-color: #2f2f2f;
-    padding: 5px 12px;
+    padding: 3px 8px;
     border-radius: 8px;
     color: #FFFACD;
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -1028,16 +836,17 @@ body {
     border-radius: 12px;
     color: #ffd700;
     font-weight: 500;
+    text-align: center;
 }
 
 .feature-section {
     background: var(--accent-grey);
-    padding: 22px 16px;
+    padding: 18px 14px;
     border-radius: 12px;
     margin-bottom: 24px;
     color: var(--primary-grey);
     font-weight: bold;
-    font-size: 1.3em;
+    font-size: 1em;
     border: 2px solid #ddd;
     box-shadow: 0 8px 32px #eee;
 }
@@ -1046,8 +855,8 @@ body {
     background: var(--black);
     color: var(--light-grey);
     font-weight: bold;
-    font-size: 1.13em;
-    padding: 8px 18px;
+    font-size: 1em;
+    padding: 6px 14px;
     border-radius: 8px;
     border: 2.2px solid #aaa;
     display: inline-block;
@@ -1078,8 +887,8 @@ ul.features li {
 .option-card {
     border: 2px solid var(--accent-grey);
     border-radius: 14px;
-    width: 41%;
-    padding: 28px 16px 22px 16px;
+    width: 30%;
+    padding: 25px 12px 18px 12px;
     box-shadow: 0 8px 32px #eee;
     display: flex;
     flex-direction: column;
@@ -1090,8 +899,8 @@ ul.features li {
 
 .option-title {
     color: var(--blue);
-    font-size: 1.75em;
-    font-weight: 700;
+    font-size: 1.25em;
+    font-weight: 500;
     margin-bottom: 7px;
 }
 
@@ -1256,26 +1065,52 @@ textarea {
             <div class="top-banner">Annai Savvy Associates [Job Consultancy]</div>
         </div>
         <div class="subtitle">Your Satisfaction, Our Commitment</div>
-        <div class="feature-section">
-            <span class="highlight-grey">Reliable partner for your Employment & Recruitment Needs</span>
-            <ul class="features">
-                <li>Connecting Employers and Employees effectively</li>
-                <li>Ensuring clear and transparent communication</li>
-                <li>Competitive and feasible service charges for all</li>
-            </ul>
-        </div>
+        <div class="feature-section" style="padding: 10px 12px;">
+    <span class="highlight-grey">Reliable partner for your Employment & Recruitment Needs</span>
+
+    <div id="job-features" 
+     style="font-size: 2em; color: #000; font-weight: normal; margin: 5px 0; text-align: center; height: 28px;">
+</div>
+
+<script>
+const jobLines = [
+  "• Connecting Employers and Employees effectively",
+  "• Ensuring clear and transparent communication",
+  "• Competitive and feasible service charges for all"
+];
+
+let jobIndex = 0;
+const jobBox = document.getElementById("job-features");
+
+function blinkText() {
+  jobBox.style.opacity = 0;
+
+  setTimeout(() => {
+    jobBox.innerText = jobLines[jobIndex];
+    jobBox.style.opacity = 1;
+
+    jobIndex = (jobIndex + 1) % jobLines.length;
+  }, 400);
+}
+
+setInterval(blinkText, 2000);
+blinkText();
+</script>
+
+</div>
+
         <div class="main-section">
             <div class="option-card">
                 <div class="Employer">Employer</div>
                 <div class="option-title">Find the Right Talent - Happy Hiring!</div>
-                <div class="option-desc">Fill in your company and vacancy details accurately to get suitable candidates quickly.</div>
+                <div class="option-desc">Fill in the required details clearly to make us to act Faster</div>
                 <div class="option-tip">Click below to submit job vacancy details for recruitment</div>
                 <button class="action-btn" onclick="jobOpenForm('employer')">Submit Vacancy</button>
             </div>
             <div class="option-card">
                 <div class="Employee">Employee</div>
                 <div class="option-title">Find Your Dream Job - Happy Working!</div>
-                <div class="option-desc">Provide your personal and professional details to find matching job opportunities.</div>
+                <div class="option-desc">Provide your required details to find and to connect you for the matching job opportunities.</div>
                 <div class="option-tip">Click below to submit your job application details</div>
                 <button class="action-btn" onclick="jobOpenForm('employee')">Submit Details</button>
             </div>
@@ -1467,6 +1302,30 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+
+function scrollToBottom(id) {
+    setTimeout(() => {
+        let section = document.getElementById(id);
+        if (section) {
+            window.scrollTo({
+                top: section.offsetTop + section.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    }, 100);
+}
+
+
+
+
+
+
+
+
+
+
 </script>
 
 
@@ -1474,7 +1333,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </section>
 
 
-//*Events*//
+    <!-- Event Management Section -->
 
 
 <style>
@@ -1707,7 +1566,7 @@ function closePdfModal(e) {
   <section id="misc" class="page"><h2>Legal Team Assistance & Additional Services</h2>
 
 
-<div style="font-family: Arial, sans-serif; max-width: 100%; box-sizing: border-box; background: #153260; color: #fff; border-radius: 8px; padding: 24px 20px 24px 20px;">
+<div style="font-family: Arial, sans-serif; max-width: 100%; box-sizing: border-box; background: #6d7f92; color: #fff; border-radius: 8px; padding: 24px 20px 24px 20px;">
 
   
   <div style="display: flex; gap: 40px; align-items: flex-start;">
@@ -1741,37 +1600,60 @@ function closePdfModal(e) {
 	 <ul style="list-style-type: none; padding: 0; font-size: 14px; color: #fff; margin: 0;">
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/judge.png" alt="Criminal Cases" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-          <strong style="color: #fffd37;">Criminal Cases:</strong>&nbsp;&nbsp;<span style="color: #fff;">Assisting with legal defenses, hearings, and documentation for criminal matters.</span>
+         <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Criminal Cases</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;">Assisting with legal defenses, hearings, and documentation for criminal matters.</strong>
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/family--v1.png" alt="Family Cases" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-          <strong style="color: #fffd37;">Family Cases:</strong>&nbsp;&nbsp;<span style="color: #fff;">Support in matters related to divorce, custody, alimony, and family dispute resolution.
-</span>
+          <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Family Cases</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;">Support in matters related to divorce, custody, alimony, and family dispute resolution.
+</strong>
 
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/agreement.png" alt="Civil Cases" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-   <strong style="color: #fffd37;">Civil Cases:</strong>&nbsp;&nbsp;<span style="color: #fff;"> Legal assistance with property disputes, contractual issues, and claims.
-</span>
+   <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Civil Cases</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Legal assistance with property disputes, contractual issues, and claims.
+</strong>
        
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/wedding.png" alt="Marriage Registration" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
           
-<strong style="color: #fffd37;">Marriage Registration :</strong>&nbsp;&nbsp;<span style="color: #fff;"> Help with the legal formalities and documentation for marriage registrations.
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Marriage Registration</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Help with the legal formalities and documentation for marriage registrations.
 
-</span>
+</strong>
 
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/property.png" alt="Land Documents" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
- <strong style="color: #fffd37;">Land Documentation :</strong>&nbsp;&nbsp;<span style="color: #fff;"> Assistance in property registration, documentation, and related legal processes.
-
-
-</span>
+ <strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Land Documentation</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Assistance in property registration, documentation, and related legal processes.
+</strong>
         
 
         </li>
@@ -1786,30 +1668,41 @@ function closePdfModal(e) {
       <ul style="list-style-type: none; padding: 0; font-size: 14px; color: #fff; margin: 0;">
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/gst.png" alt="GST Registrations" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
-<strong style="color: #fffd37;">GST Registrations & Filings:</strong>&nbsp;&nbsp;<span style="color: #fff;"> Support for registering your business under GST and filing GST returns on time for full compliance.
-
-
-</span>
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">GST Registration & Filings</strong>&nbsp;&nbsp;<strong style="color: #000; font-size:16px;"> Support for registering your business under GST and filing GST returns on time for full compliance.
+</strong>
           
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/filling-a-tax-return.png" alt="IT Returns" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
           
-<strong style="color: #fffd37;">Income Tax Returns Assistance:</strong>&nbsp;&nbsp;<span style="color: #fff;"> Guidance for preparing, filing, and managing income tax returns to maximize your tax benefits.
-
-
-</span>
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">IT Returns Assistance</strong>&nbsp;&nbsp;<strong style="color: #000;"> Guidance for preparing, filing, and managing income tax returns to maximize your tax benefits.
+</strong>
 
 
         </li>
         <li style="margin-bottom: 10px; display: flex; align-items: center;">
           <img src="https://img.icons8.com/color/48/company.png" alt="Company Incorporation" style="margin-right: 10px; width:24px; height:24px; background: #fff; border-radius: 5px;">
           
-<strong style="color: #fffd37;">Incorp.of Company:</strong>&nbsp;&nbsp;<span style="color: #fff;"> End-to-end assistance for registering all types of companies, ensuring legal compliance and hassle-free setup.
+<strong style="
+  color: #ffffff;
+  background:#003f87;
+  padding:3px 8px;
+  border-radius:5px;
+">Incorporation of Co.,</strong>&nbsp;&nbsp;<strong style="color: #000;"> End-to-end assistance for registering all types of companies, ensuring legal compliance and hassle-free setup.
 
 
-</span>
+</strong>
 
 
         </li>
@@ -1833,7 +1726,7 @@ function closePdfModal(e) {
         98406 47844
       </a> or email: 
       <a href="javascript:void(0)" onclick="sendEmailAndWhatsapp('Legal Assistance')" style="color: #8B8000; text-decoration: underline;">
-        annaisavvyassociates.hotmail.com
+        annaisavvyassociates@hotmail.com
       </a>.
     </span>
     <span style="font-size: 19px; color: #fff; white-space: nowrap; margin-left: 50px;">
@@ -1842,7 +1735,7 @@ function closePdfModal(e) {
         98406 47844
       </a> or email: 
       <a href="javascript:void(0)" onclick="sendEmailAndWhatsapp('Legal Assistance')" style="color: #8B8000; text-decoration: underline;">
-        annaisavvyassociates.hotmail.com
+        annaisavvyassociates@hotmail.com
       </a>.
     </span>
   </div>
@@ -1943,33 +1836,77 @@ function closePdfModal(e) {
   }
 
   function navigate(page) {
-    document.querySelectorAll('main .page').forEach(p => p.classList.remove('active'));
-    const el = document.getElementById(page);
-    if (el) {
-      el.classList.add('active');
-    }
-    if (page === 'landing') {
-      resetFlashContent();
-    } else {
-      clearInterval(flashTextInterval);
-    }
-    if (page === 'jewelry') {
-      loadJewelryData();
-    }
-    if (page === 'contact') {
-      setContactGreeting();
-    }
+  // 1) Hide all <section> pages (jewelry, realestate, job, event, freight, misc, about, contact)
+  document.querySelectorAll('main section.page').forEach(p => p.classList.remove('active'));
+
+  // 2) Show the requested page (if it is a <section>)
+  const el = document.getElementById(page);
+  if (el && el.tagName.toLowerCase() === 'section') {
+    el.classList.add('active');
   }
 
-  document.querySelectorAll('.category-circle').forEach(el => {
-    el.onclick = () => {
-      currentCategory = el.getAttribute('data-category');
-      document.querySelectorAll('.category-circle').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      navigate(currentCategory);
-      resetFlashContent();
-    };
-  });
+  // 3) Close any overlays/popups (Real Estate / Job modals, Event zoom, Event PDF)
+  const overlays = document.querySelectorAll('.modal-overlay, #zoom-modal, #pdf-modal');
+  overlays.forEach(o => o.style.display = 'none');
+
+  // 4) Your existing logic
+  if (page === 'landing') {
+    resetFlashContent();
+  } else {
+    clearInterval(flashTextInterval);
+  }
+
+  if (page === 'jewelry') {
+    loadJewelryData();
+  }
+
+  if (page === 'contact') {
+    setContactGreeting();
+  }
+}
+
+
+ document.querySelectorAll('.category-circle').forEach(el => {
+  el.onclick = () => {
+    currentCategory = el.getAttribute('data-category');
+
+    // highlight active circle
+    document.querySelectorAll('.category-circle').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+
+    // show the page
+    navigate(currentCategory);
+    resetFlashContent();
+
+    // helper function (NEEDED!)
+    function scrollWithOffset(sectionId, offset = 80) {
+      const sec = document.getElementById(sectionId);
+      if (!sec) return;
+
+      setTimeout(() => {
+        const y = sec.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }, 300);
+    }
+
+    // existing scroll for real estate
+    if (currentCategory === "realestate") {
+      setTimeout(() => {
+        const sec = document.getElementById("realestate");
+        if (sec) {
+          sec.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+      }, 300);
+    }
+
+    // NEW scroll for event
+    if (currentCategory === "event") {
+      scrollWithOffset("event", 60);
+    }
+  };
+});
+
+
 
   flashContent.onclick = () => {
     navigate(currentCategory);

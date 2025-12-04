@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Cart - Annai Savvy Associates</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body{font-family:Arial,Segoe UI, sans-serif; margin:18px; background:#f6f7fb; color:#222}
+    header{background:#232f3e;color:#fff;padding:12px 18px;border-radius:6px}
+    a.back{color:#ffd700;text-decoration:none;font-weight:700}
+    .container{max-width:900px;margin:18px auto;background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+    .right{text-align:right}
+    .empty{padding:40px;text-align:center;color:#777}
+    .btn{background:#28a745;color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .top-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <img src="Logo1.png" alt="Logo" style="height:42px"/>
+      <div style="font-weight:700;font-size:18px">Annai Savvy Associates — Cart</div>
+      <div style="margin-left:auto"><a class="back" href="index.html">← Back to site</a></div>
+    </div>
+  </header>
+
+  <div class="container" id="cartContainer">
+    <div class="top-actions">
+      <div style="font-weight:700;font-size:16px">Your selected products</div>
+      <div>
+        <button class="btn" id="clearCartBtn">Clear Cart</button>
+      </div>
+    </div>
+
+    <div id="cartContent"></div>
+  </div>
+
+<script>
+  function getCart() {
+    try { return JSON.parse(localStorage.getItem('cart') || '{}'); }
+    catch(e){ return {}; }
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    const el = document.getElementById('cartContent');
+    const ids = Object.keys(cart);
+    if (!ids.length) {
+      el.innerHTML = '<div class="empty">Your cart is empty.<br><br><a href="index.html">Continue shopping</a></div>';
+      return;
+    }
+
+    let total = 0;
+    let rows = '<table><thead><tr><th>Product</th><th>Price</th><th>Qty</th><th class="right">Subtotal</th></tr></thead><tbody>';
+    ids.forEach(id => {
+      const item = cart[id];
+      const qty = item.quantity || 0;
+      const price = Number(item.price || 0);
+      const subtotal = qty * price;
+      total += subtotal;
+      rows += `<tr>
+        <td>${item.name || 'Product #' + id}</td>
+        <td>₹${price.toLocaleString()}</td>
+        <td>${qty}</td>
+        <td class="right">₹${subtotal.toLocaleString()}</td>
+      </tr>`;
+    });
+    rows += `</tbody><tfoot><tr><td colspan="3" style="font-weight:700">Total</td><td class="right" style="font-weight:700">₹${total.toLocaleString()}</td></tr></tfoot></table>
+    <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn" id="checkoutBtn">Proceed to Checkout</button>
+    </div>`;
+    el.innerHTML = rows;
+  }
+
+  document.getElementById('clearCartBtn').addEventListener('click', () => {
+    if (!confirm('Clear all items from cart?')) return;
+    localStorage.removeItem('cart');
+    renderCart();
+    // update index nav (if index opened later)
+    try { opener && opener.updateNavCart && opener.updateNavCart(); } catch(e){}
+  });
+
+  document.getElementById('checkoutBtn')?.addEventListener('click', () => {
+    alert('This demo opens your default mail client for order placement. To build a full checkout, we can add payment integration.');
+    // Example: prepare email with order details
+    const cart = getCart();
+    const lines = [];
+    Object.keys(cart).forEach(id => {
+      const it = cart[id];
+      lines.push(`${it.name} - Qty: ${it.quantity} - Price: ₹${it.price}`);
+    });
+    const body = encodeURIComponent('Order details:%0A' + lines.join('%0A'));
+    window.location.href = 'mailto:annaisavvyassociates@hotmail.com?subject=Order%20Enquiry&body=' + body;
+  });
+
+  // Initial render
+  renderCart();
+</script>
+</body>
+</html>
