@@ -2271,15 +2271,18 @@ async function addToCart(id, products) {
   const product = products.find(p => p.id === id);
   if (!product) return;
 
-  // 1) Try to reserve global stock (Firestore)
+  // 1) Reserve 1 unit in Firestore
   const ok = await reserveGlobalStock(product, 1);
   if (!ok) {
-    alert('Sorry, this item is out of stock globally.');
+    alert("Sorry, this item is out of stock globally.");
     return;
   }
 
-  // 2) Update local copy of stock so UI shows new available number
-  product.stock = Number(product.stock || 0) - 1;
+  // 2) Read true Firestore value after reservation
+  const latest = await getGlobalStock(product.id);
+  if (latest !== null) {
+    product.stock = latest;
+  }
 
   // 3) Update local cart
   addToCartLocalOnly(id, products);
@@ -2292,11 +2295,26 @@ async function removeFromCart(id, products) {
   // 1) Update local cart
   removeFromCartLocalOnly(id, products);
 
-  // 2) Update local copy of stock (add back 1)
-  product.stock = Number(product.stock || 0) + 1;
-
-  // 3) Return 1 unit to Firestore
+  // 2) Return 1 unit to Firestore (global)
   await releaseGlobalStock(product, 1);
+
+  // 3) Read updated true stock from Firestore
+  const latest = await getGlobalStock(product.id);
+  if (latest !== null) {
+    product.stock = latest;
+  }
+}
+
+// Read TRUE stock directly from Firestore
+async function getGlobalStock(productId) {
+  try {
+    const doc = await db.collection('products').doc(String(productId)).get();
+    if (!doc.exists) return null;
+    return Number(doc.data().stock || 0);
+  } catch (e) {
+    console.warn("getGlobalStock error:", e);
+    return null;
+  }
 }
 
   function setContactGreeting() {
