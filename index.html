@@ -8,6 +8,8 @@
 <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore-compat.js"></script>
+
 <script>
 // Your Firebase confirguration
 const firebaseConfig = {
@@ -23,26 +25,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
-
-
-
-
-
-
-  // Your Firebase configuration
-  //const firebaseConfig = {
- // apiKey: "AIzaSyABRImFyGE7ku2fWpQBiE_7fUrBXEX3fXU",
- // authDomain: "annai-savvy-associates.firebaseapp.com",
- // projectId: "annai-savvy-associates",
- // storageBucket: "annai-savvy-associates.appspot.com",
-//  messagingSenderId: "1040802923823",
- // appId: "1:1040802923823:web:9b4cea79ab33ef9dc04dda",
- // measurementId: "G-ZKJVGS5TG6"
-//};
-
-//firebase.initializeApp(firebaseConfig);
-//firebase.analytics();
-
+const db = firebase.firestore();
 </script>
 
 
@@ -2253,30 +2236,59 @@ function closePdfModal(e) {
       }
     }
   }
-  function addToCart(id, products) {
-    const cart = getCart();
-    const product = products.find(p => p.id === id);
-    if (!product) return;
-    const qtyInCart = cart[id] ? cart[id].quantity : 0;
-    if (qtyInCart >= product.stock) {
-      alert('Stock limit reached!');
-      return;
-    }
-    if (!cart[id]) cart[id] = { ...product, img: product.filename, quantity: 0 };
-    cart[id].quantity++;
-    saveCart(cart);
-    updateNavCart();
+  function addToCartLocalOnly(id, products) {
+  const cart = getCart();
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+  const qtyInCart = cart[id] ? cart[id].quantity : 0;
+  if (qtyInCart >= product.stock) {
+    alert('Stock limit reached!');
+    return;
   }
-  function removeFromCart(id, products) {
-    const cart = getCart();
-    if (!cart[id]) return;
-    cart[id].quantity--;
-    if (cart[id].quantity <= 0) {
-      delete cart[id];
-    }
-    saveCart(cart);
-    updateNavCart();
+  if (!cart[id]) cart[id] = { ...product, img: product.filename, quantity: 0 };
+  cart[id].quantity++;
+  saveCart(cart);
+  updateNavCart();
+}
+
+function removeFromCartLocalOnly(id, products) {
+  const cart = getCart();
+  if (!cart[id]) return;
+  cart[id].quantity--;
+  if (cart[id].quantity <= 0) {
+    delete cart[id];
   }
+  saveCart(cart);
+  updateNavCart();
+}
+// ====== GLOBAL CART WRAPPERS (use Firestore + existing local logic) ======
+
+async function addToCart(id, products) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+
+  // 1) Try to reserve global stock
+  const ok = await reserveGlobalStock(product, 1);
+  if (!ok) {
+    alert('Sorry, this item is out of stock globally.');
+    return;
+  }
+
+  // 2) If reserved, update local cart normally
+  addToCartLocalOnly(id, products);
+}
+
+async function removeFromCart(id, products) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+
+  // 1) Update local cart first
+  removeFromCartLocalOnly(id, products);
+
+  // 2) Then return 1 unit back to global stock
+  await releaseGlobalStock(product, 1);
+}
+
   function setContactGreeting() {
     const p = document.querySelector('#contact p');
     if (p) {
@@ -2393,19 +2405,98 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
   });
 
   // Logout button click handler
-  logoutBtn.addEventListener('click', () => {
-    firebase.auth().signOut()
-      .then(() => {
-        alert('You have logged out successfully!');
-        window.location.href = 'index.html'; // redirect or reload your page after logout
-      })
-      .catch(error => {
-        alert('Logout error: ' + error.message);
-      });
-  });
+  logoutBtn.addEventListener('click', async () => {
+  try {
+    // 🔴 Return items to global stock first
+    await returnCartToGlobalStock();
+
+    await firebase.auth().signOut();
+    alert('You have logged out successfully!');
+    window.location.href = 'index.html';
+  } catch (error) {
+    alert('Logout error: ' + error.message);
+  }
+});
+
 </script>
 
 
+<script>
+/* ============ GLOBAL STOCK HELPERS (Firestore) ============ */
+
+/**
+ * Reserve stock in Firestore (decrement).
+ * @param {object} product - product object with id and stock.
+ * @param {number} qty - quantity to reserve.
+ * @returns {Promise<boolean>} true if success, false if not enough stock.
+ */
+async function reserveGlobalStock(product, qty) {
+  const docRef = db.collection('products').doc(String(product.id));
+
+  try {
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(docRef);
+
+      let currentStock;
+      if (!snap.exists) {
+        // First time: initialise with product.stock (from Excel)
+        currentStock = Number(product.stock || 0);
+      } else {
+        currentStock = Number(snap.data().stock || 0);
+      }
+
+      if (currentStock < qty) {
+        throw new Error('Insufficient stock');
+      }
+
+      tx.set(docRef, { stock: currentStock - qty }, { merge: true });
+    });
+
+    return true;
+  } catch (err) {
+    console.warn('reserveGlobalStock error for product', product.id, err);
+    return false;
+  }
+}
+
+/**
+ * Release stock in Firestore (increment).
+ * @param {object} product - product object with id.
+ * @param {number} qty - quantity to return.
+ */
+async function releaseGlobalStock(product, qty) {
+  const docRef = db.collection('products').doc(String(product.id));
+
+  try {
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(docRef);
+      const currentStock = snap.exists ? Number(snap.data().stock || 0) : 0;
+      tx.set(docRef, { stock: currentStock + qty }, { merge: true });
+    });
+  } catch (err) {
+    console.warn('releaseGlobalStock error for product', product.id, err);
+  }
+}
+
+/**
+ * Return all items currently in local cart back into global stock.
+ * Call this when user cancels / exits / logs out without purchase.
+ */
+async function returnCartToGlobalStock() {
+  const cart = getCart();
+  const ids = Object.keys(cart);
+  if (!ids.length) return;
+
+  const tasks = ids.map(async (id) => {
+    const item = cart[id];
+    await releaseGlobalStock(item, item.quantity);
+  });
+
+  await Promise.all(tasks);
+  localStorage.removeItem('cart');
+  updateNavCart();
+}
+</script>
 
 
 
