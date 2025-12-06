@@ -2162,7 +2162,10 @@ function closePdfModal(e) {
     products.forEach(product => {
       if (!product.filename || !product.name) return;
       const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
-      const avail = product.stock - qtyInCart;
+
+// product.stock should already be the GLOBAL stock (from Firestore)
+// so DON'T subtract qtyInCart here
+const avail = Number(product.stock || 0);
       const soldOut = avail <= 0;
       const productDiv = document.createElement('div');
       productDiv.className = 'product-item';
