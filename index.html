@@ -26,6 +26,44 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 const db = firebase.firestore();
+
+
+
+
+
+// One-time helper: reset Firestore 'stock' from Excel file.
+// Run resetStocksFromExcelIntoFirestore() ONCE from the browser console.
+async function resetStocksFromExcelIntoFirestore() {
+  try {
+    console.log("Resetting Firestore stock from products_catalog.xlsx ...");
+
+    // 1) Load Excel
+    const response = await fetch('products_catalog.xlsx?t=' + Date.now());
+    if (!response.ok) throw new Error('Failed to fetch Excel file for reset');
+
+    const data = await response.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const json = XLSX.utils.sheet_to_json(sheet);
+
+    // 2) Write each row's stock into Firestore products/{id}
+    const batch = db.batch();
+    json.forEach((item, idx) => {
+      const id = idx + 1;                 // same as your product.id
+      const stock = Number(item.stock || 0);
+      const ref = db.collection('products').doc(String(id));
+      batch.set(ref, { stock: stock }, { merge: true });
+    });
+
+    await batch.commit();
+    alert('✅ Stocks reset from Excel into Firestore. Reload the page to see correct availability.');
+  } catch (err) {
+    console.error('resetStocksFromExcelIntoFirestore error:', err);
+    alert('❌ Error resetting stocks: ' + (err.message || err));
+  }
+}
+
 </script>
 
 
@@ -1338,23 +1376,41 @@ document.addEventListener("DOMContentLoaded", function () {
     // Open email
     window.location.href = mailto;
 });
-
+.
 });
 
 
 
-function scrollToBottom(id) {
-    setTimeout(() => {
-        let section = document.getElementById(id);
-        if (section) {
-            window.scrollTo({
-                top: section.offsetTop + section.scrollHeight,
-                behavior: "smooth"
-            });
-        }
-    }, 100);
-}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  let autoScrolledJob = false; // allows Job scroll only once
 
+  const jobObserver = new MutationObserver(() => {
+    const jobSection = document.getElementById("job");
+
+    // When Job Consultancy is opened AND auto-scroll hasn't run yet
+    if (jobSection && jobSection.classList.contains("active") && !autoScrolledJob) {
+      autoScrolledJob = true; // prevent re-scrolling when user moves the page
+
+      setTimeout(() => {
+        window.scrollTo({
+          top: jobSection.offsetTop + jobSection.scrollHeight,
+          behavior: "smooth"
+        });
+      }, 300);
+    }
+  });
+
+  jobObserver.observe(document.body, { attributes: true, subtree: true });
+
+  // Reset auto-scroll when switching away from Job
+  document.querySelectorAll(".category-circle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      autoScrolledJob = false;
+    });
+  });
+});
+</script>
 
 
 
@@ -1637,12 +1693,19 @@ function closePdfModal(e) {
       font-weight:500;
     }
     .fre-grid {
-      display:flex;
-      gap:28px;
-      justify-content:space-between;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
+  display:flex;
+  gap:28px;
+  justify-content:space-between;
+  align-items:flex-start;
+  flex-wrap:nowrap;          /* keep them side-by-side on wide screens */
+}
+
+/* On small screens, allow wrapping (same look as before) */
+@media (max-width:900px) {
+  .fre-card { width:100%; }
+  .fre-grid { flex-wrap:wrap; }
+}
+
     .fre-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
@@ -1716,7 +1779,8 @@ function closePdfModal(e) {
       </div>
     </div>
 
-    <div style="margin-top:18px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); color:#e9e9e9;">
+    <div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.04); color:#e9e9e9;">
+
       <div style="font-weight:700; margin-bottom:8px;">Pros & Cons — quick glance</div>
       <div style="display:flex; gap:18px; flex-wrap:wrap;">
         <div style="flex:1; min-width:220px;">
@@ -1738,7 +1802,8 @@ function closePdfModal(e) {
       </div>
     </div>
 
-    <div style="margin-top:18px; font-size:0.95em; color:#f1f1f1;">
+    <div style="margin-top:8px; font-size:0.95em; color:#f1f1f1;">
+
       <div style="font-weight:700; margin-bottom:6px;">How to engage us</div>
       <ol style="color:#e7e7e7; padding-left:18px; line-height:1.6;">
         <li>Contact our CHA team with shipment details (dimensions, weight, HS code, origin & destination).</li>
@@ -1752,7 +1817,8 @@ function closePdfModal(e) {
     </div>
 
     <!-- Attribution / source line you can show at bottom -->
-    <div style="margin-top:14px; font-size:12px; color:#d6d6d6;">
+    <div style="margin-top:6px; font-size:12px; color:#d6d6d6;">
+
       <em>Content adapted for Annai Savvy Associates from general industry resources for informational purposes.</em>
     </div>
   </div>
@@ -1761,6 +1827,92 @@ function closePdfModal(e) {
   <div class="fre-flash">
     <p>Need CHA / Freight help? Call 98406 47844 or email annaisavvyassociates@hotmail.com — mention "Freight" in subject for faster response.</p>
   </div>
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  let autoScrolled = false; // allows scroll only once
+
+  const observer = new MutationObserver(() => {
+    const freightSection = document.getElementById("freight");
+
+    // When Freight is opened AND auto-scroll hasn't run yet
+    if (freightSection && freightSection.classList.contains("active") && !autoScrolled) {
+      autoScrolled = true; // prevent re-scrolling when user moves the page
+
+      setTimeout(() => {
+        window.scrollTo({
+          top: freightSection.offsetTop + freightSection.scrollHeight,
+          behavior: "smooth"
+        });
+      }, 300);
+    }
+  });
+
+  observer.observe(document.body, { attributes: true, subtree: true });
+
+  // Reset auto-scroll when switching away from Freight
+  document.querySelectorAll(".category-circle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      autoScrolled = false;
+    });
+  });
+});
+</script>
+<button id="goUpButton" style="
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background: #ffd700;
+  color: #1a2364;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  z-index: 9999;
+">Go Up</button>
+
+
+
+
+<script>
+document.addEventListener("scroll", () => {
+  const btn = document.getElementById("goUpButton");
+  if (!btn) return;
+
+  // Show button only when user scrolls down 400px+
+  if (window.scrollY > 400) {
+    btn.style.display = "block";
+  } else {
+    btn.style.display = "none";
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("goUpButton");
+  if (btn) {
+    btn.onclick = () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+  }
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 </section>
 
 
@@ -2160,13 +2312,19 @@ function closePdfModal(e) {
     const cart = getCart();
 
     products.forEach(product => {
-      if (!product.filename || !product.name) return;
-      const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
+  if (!product.filename || !product.name) return;
+
+  const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
+
+// TRUE available stock from Firestore
+const avail = Number(product.stock || 0);
+
+const soldOut = avail <= 0;
+
+
 
 // product.stock should already be the GLOBAL stock (from Firestore)
 // so DON'T subtract qtyInCart here
-const avail = Number(product.stock || 0);
-      const soldOut = avail <= 0;
       const productDiv = document.createElement('div');
       productDiv.className = 'product-item';
       productDiv.innerHTML = `
