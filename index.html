@@ -1381,36 +1381,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  let autoScrolledJob = false; // allows Job scroll only once
+function scrollToBottom(id) {
+    setTimeout(() => {
+        let section = document.getElementById(id);
+        if (section) {
+            window.scrollTo({
+                top: section.offsetTop + section.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    }, 100);
+}
 
-  const jobObserver = new MutationObserver(() => {
-    const jobSection = document.getElementById("job");
-
-    // When Job Consultancy is opened AND auto-scroll hasn't run yet
-    if (jobSection && jobSection.classList.contains("active") && !autoScrolledJob) {
-      autoScrolledJob = true; // prevent re-scrolling when user moves the page
-
-      setTimeout(() => {
-        window.scrollTo({
-          top: jobSection.offsetTop + jobSection.scrollHeight,
-          behavior: "smooth"
-        });
-      }, 300);
-    }
-  });
-
-  jobObserver.observe(document.body, { attributes: true, subtree: true });
-
-  // Reset auto-scroll when switching away from Job
-  document.querySelectorAll(".category-circle").forEach(btn => {
-    btn.addEventListener("click", () => {
-      autoScrolledJob = false;
-    });
-  });
-});
-</script>
 
 
 
@@ -2058,7 +2040,10 @@ document.addEventListener("DOMContentLoaded", () => {
   padding:3px 8px;
   border-radius:5px;
 ">Incorporation of Co.,</strong>&nbsp;&nbsp;<strong style="color: #000;"> End-to-end assistance for registering all types of companies, ensuring legal compliance and hassle-free setup.
-
+<div class="fre-cta">
+          
+          <button class="fre-btn" onclick="location.href='mailto:annaisavvyassociates@hotmail.com?subject=Freight%20CHA%20Assistance'">Email Us</button>
+        </div>
 
 </strong>
 
@@ -2096,6 +2081,13 @@ document.addEventListener("DOMContentLoaded", () => {
         annaisavvyassociates@hotmail.com
       </a>.
     </span>
+
+
+
+
+
+
+
   </div>
 </div>
 
@@ -2108,6 +2100,15 @@ document.addEventListener("DOMContentLoaded", () => {
     transform: translateX(-50%);
   }
 }
+
+
+
+
+
+
+
+
+
 </style>
 
 
