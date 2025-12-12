@@ -26,44 +26,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 const db = firebase.firestore();
-
-
-
-
-
-// One-time helper: reset Firestore 'stock' from Excel file.
-// Run resetStocksFromExcelIntoFirestore() ONCE from the browser console.
-async function resetStocksFromExcelIntoFirestore() {
-  try {
-    console.log("Resetting Firestore stock from products_catalog.xlsx ...");
-
-    // 1) Load Excel
-    const response = await fetch('products_catalog.xlsx?t=' + Date.now());
-    if (!response.ok) throw new Error('Failed to fetch Excel file for reset');
-
-    const data = await response.arrayBuffer();
-    const workbook = XLSX.read(data, { type: 'array' });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const json = XLSX.utils.sheet_to_json(sheet);
-
-    // 2) Write each row's stock into Firestore products/{id}
-    const batch = db.batch();
-    json.forEach((item, idx) => {
-      const id = idx + 1;                 // same as your product.id
-      const stock = Number(item.stock || 0);
-      const ref = db.collection('products').doc(String(id));
-      batch.set(ref, { stock: stock }, { merge: true });
-    });
-
-    await batch.commit();
-    alert('✅ Stocks reset from Excel into Firestore. Reload the page to see correct availability.');
-  } catch (err) {
-    console.error('resetStocksFromExcelIntoFirestore error:', err);
-    alert('❌ Error resetting stocks: ' + (err.message || err));
-  }
-}
-
 </script>
 
 
@@ -1376,7 +1338,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Open email
     window.location.href = mailto;
 });
-.
+
 });
 
 
@@ -2040,10 +2002,7 @@ document.addEventListener("DOMContentLoaded", () => {
   padding:3px 8px;
   border-radius:5px;
 ">Incorporation of Co.,</strong>&nbsp;&nbsp;<strong style="color: #000;"> End-to-end assistance for registering all types of companies, ensuring legal compliance and hassle-free setup.
-<div class="fre-cta">
-          
-          <button class="fre-btn" onclick="location.href='mailto:annaisavvyassociates@hotmail.com?subject=Freight%20CHA%20Assistance'">Email Us</button>
-        </div>
+
 
 </strong>
 
@@ -2081,13 +2040,6 @@ document.addEventListener("DOMContentLoaded", () => {
         annaisavvyassociates@hotmail.com
       </a>.
     </span>
-
-
-
-
-
-
-
   </div>
 </div>
 
@@ -2100,15 +2052,6 @@ document.addEventListener("DOMContentLoaded", () => {
     transform: translateX(-50%);
   }
 }
-
-
-
-
-
-
-
-
-
 </style>
 
 
@@ -2313,19 +2256,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const cart = getCart();
 
     products.forEach(product => {
-  if (!product.filename || !product.name) return;
-
-  const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
-
-// TRUE available stock from Firestore
-const avail = Number(product.stock || 0);
-
-const soldOut = avail <= 0;
-
-
+      if (!product.filename || !product.name) return;
+      const qtyInCart = cart[product.id] ? cart[product.id].quantity : 0;
 
 // product.stock should already be the GLOBAL stock (from Firestore)
 // so DON'T subtract qtyInCart here
+const avail = Number(product.stock || 0);
+      const soldOut = avail <= 0;
       const productDiv = document.createElement('div');
       productDiv.className = 'product-item';
       productDiv.innerHTML = `
